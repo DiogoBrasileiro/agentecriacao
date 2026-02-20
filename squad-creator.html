@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SQUAD — Card Creator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #0c0c0c;
+  --card: #161616;
+  --card2: #1e1e1e;
+  --border: #2a2a2a;
+  --red: #ff3c00;
+  --yellow: #ffcc00;
+  --purple: #a855f7;
+  --green: #22c55e;
+  --blue: #38bdf8;
+  --text: #f0f0f0;
+  --sub: #888;
+  --r: 14px;
+}
+
+html { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─── */
+.hdr {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(12,12,12,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hdr-logo { font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 5px; }
+.hdr-logo b { color: var(--red); }
+.hdr-tag {
+  font-family: 'Space Mono'; font-size: 9px; color: var(--green);
+  border: 1px solid rgba(34,197,94,.35); border-radius: 6px;
+  padding: 4px 9px; display: flex; align-items: center; gap: 5px;
+}
+.hdr-tag::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green); animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+/* ─── PAGE ─── */
+.page { padding: 14px 14px 60px; max-width: 520px; margin: 0 auto; }
+
+/* ─── CARD BOX ─── */
+.box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.box-title {
+  font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px;
+  color: var(--red); text-transform: uppercase; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.box-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ─── API KEY ─── */
+.key-status {
+  font-size: 12px; color: var(--sub); margin-bottom: 8px;
+  padding: 8px 12px; background: var(--card2); border-radius: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.key-status.ok { color: var(--green); }
+.key-status.ok::before { content: '✓'; }
+.key-status:not(.ok)::before { content: '○'; }
+.key-row { display: flex; gap: 8px; }
+.key-inp {
+  flex: 1; min-width: 0;
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 11px 13px; border-radius: 10px;
+  font-family: 'Space Mono'; font-size: 12px; outline: none;
+  transition: border-color .2s; width: 100%;
+}
+.key-inp:focus { border-color: var(--blue); }
+.btn-salvar {
+  background: var(--blue); color: #000; border: none;
+  padding: 11px 16px; border-radius: 10px;
+  font-family: 'Inter'; font-size: 14px; font-weight: 700;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: opacity .15s;
+}
+.btn-salvar:active { opacity: .75; }
+.key-link { font-size: 12px; color: var(--sub); margin-top: 7px; }
+.key-link a { color: var(--blue); text-decoration: none; }
+
+/* ─── FIELDS ─── */
+.field { margin-bottom: 11px; }
+.field:last-child { margin-bottom: 0; }
+.lbl {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--sub); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .3px;
+}
+.inp, .sel, .ta {
+  display: block; width: 100%;
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 12px 14px; border-radius: 10px;
+  font-family: 'Inter'; font-size: 15px; outline: none;
+  transition: border-color .2s; appearance: none;
+}
+.inp:focus, .sel:focus, .ta:focus { border-color: var(--red); }
+.sel-wrap { position: relative; }
+.sel-wrap::after {
+  content: '▾'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--sub); pointer-events: none; font-size: 14px;
+}
+.sel { padding-right: 36px; }
+.sel option { background: #1a1a1a; }
+.ta { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+/* ─── FORMAT SELECTOR ─── */
+.fmt-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.fmt-opt {
+  background: var(--card2); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 12px 8px;
+  cursor: pointer; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  transition: border-color .2s, background .2s;
+}
+.fmt-opt.on { border-color: var(--red); background: rgba(255,60,0,.08); }
+.fmt-thumb {
+  background: #2a2a2a; border: 1.5px solid #3a3a3a; border-radius: 3px;
+  transition: border-color .2s;
+}
+.fmt-opt.on .fmt-thumb { border-color: var(--red); }
+.fmt-name { font-family: 'Bebas Neue'; font-size: 14px; letter-spacing: 1px; color: var(--sub); }
+.fmt-size { font-family: 'Space Mono'; font-size: 9px; color: #555; }
+.fmt-opt.on .fmt-name { color: var(--red); }
+
+/* ─── LAUNCH BTN ─── */
+.btn-launch {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 17px; margin-bottom: 10px;
+  background: var(--red); color: #fff; border: none; border-radius: 14px;
+  font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 4px;
+  cursor: pointer; transition: opacity .15s, transform .1s;
+}
+.btn-launch:active { opacity: .85; transform: scale(.98); }
+.btn-launch:disabled { background: #222; color: #444; cursor: not-allowed; transform: none; }
+
+/* ─── PROGRESS ─── */
+.progress-box { display: none; margin-bottom: 10px; }
+.progress-box.show { display: block; }
+.prog-bar { height: 3px; background: var(--card2); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--yellow)); width: 0%; transition: width .6s ease; }
+.prog-info { font-family: 'Space Mono'; font-size: 10px; color: var(--sub); display: flex; justify-content: space-between; }
+
+/* ─── AGENT ITEM ─── */
+.agent {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 8px; overflow: hidden;
+  transition: border-color .3s;
+}
+.agent.running { border-color: var(--red); }
+.agent.done { border-color: rgba(34,197,94,.4); }
+.agent-hd {
+  display: flex; align-items: center; gap: 12px; padding: 14px;
+  cursor: pointer; user-select: none;
+}
+.agent-ico {
+  width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+  background: var(--card2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  transition: background .2s, border-color .2s;
+}
+.agent.running .agent-ico { background: rgba(255,60,0,.12); border-color: var(--red); }
+.agent.done .agent-ico { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.4); }
+.agent-meta { flex: 1; min-width: 0; }
+.agent-n { font-family: 'Space Mono'; font-size: 9px; color: #555; }
+.agent-nm { font-family: 'Bebas Neue'; font-size: 17px; letter-spacing: 1px; line-height: 1.1; }
+.agent-rl { font-size: 11px; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agent-tag {
+  font-family: 'Space Mono'; font-size: 9px; padding: 4px 8px;
+  border-radius: 7px; border: 1px solid var(--border); color: #555; flex-shrink: 0;
+}
+.agent.running .agent-tag { border-color: var(--red); color: var(--red); }
+.agent.done .agent-tag { border-color: var(--green); color: var(--green); }
+.agent-bd { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); }
+.agent-bd.open { display: block; padding-top: 12px; }
+.agent-txt { font-size: 12px; line-height: 1.8; color: #aaa; white-space: pre-wrap; word-break: break-word; }
+.agent-txt strong { color: var(--yellow); }
+
+/* ─── DOTS ─── */
+.dots { display: flex; gap: 4px; padding: 10px 0; }
+.dots span {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--red);
+  animation: dot 1.2s infinite;
+}
+.dots span:nth-child(2) { animation-delay: .2s; }
+.dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dot { 0%,100%{transform:translateY(0);opacity:.25} 50%{transform:translateY(-5px);opacity:1} }
+
+/* ─── OUTPUT BOXES ─── */
+.out-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 8px; overflow: hidden;
+}
+.out-hd {
+  padding: 13px 14px; display: flex; align-items: center;
+  justify-content: space-between; cursor: pointer;
+}
+.out-hd:active { background: var(--card2); }
+.out-hd-title { font-family: 'Bebas Neue'; font-size: 14px; letter-spacing: 1px; }
+.out-bd {
+  display: none; padding: 0 14px 14px;
+  font-size: 12px; line-height: 1.8; color: #aaa;
+  white-space: pre-wrap; word-break: break-word;
+  border-top: 1px solid var(--border);
+}
+.out-bd.open { display: block; padding-top: 12px; }
+.out-bd strong { color: var(--yellow); }
+
+/* ─── PROMPT / LEGENDA ─── */
+.prompt-box {
+  background: #050e0a; border: 1px solid rgba(34,197,94,.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 10px; display: none;
+}
+.prompt-box.show { display: block; }
+.prompt-lbl { font-family: 'Space Mono'; font-size: 9px; color: var(--green); letter-spacing: 2px; margin-bottom: 8px; }
+.prompt-txt { font-family: 'Space Mono'; font-size: 11px; color: #5ef0a0; line-height: 1.65; word-break: break-all; white-space: pre-wrap; }
+
+.leg-box {
+  background: var(--card); border: 1px solid rgba(255,204,0,.25);
+  border-radius: 12px; padding: 14px; margin-bottom: 10px; display: none;
+}
+.leg-box.show { display: block; }
+.leg-lbl { font-family: 'Space Mono'; font-size: 9px; color: var(--yellow); letter-spacing: 2px; margin-bottom: 8px; }
+.leg-txt { font-size: 13px; line-height: 1.85; color: #ddd; white-space: pre-wrap; word-break: break-word; }
+
+/* ─── COPY BTN ─── */
+.cp {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
+  background: var(--card2); border: 1px solid var(--border); color: var(--sub);
+  padding: 7px 13px; border-radius: 8px; font-size: 12px; cursor: pointer;
+  transition: .15s;
+}
+.cp:active { background: #2a2a2a; }
+
+/* ─── ARTE FINAL BTN ─── */
+.btn-arte {
+  display: none; width: 100%; align-items: center; justify-content: center; gap: 8px;
+  padding: 17px; margin-bottom: 10px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff; border: none; border-radius: 14px;
+  font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 3px;
+  cursor: pointer; transition: opacity .15s, transform .1s;
+}
+.btn-arte.show { display: flex; }
+.btn-arte:active { opacity: .85; transform: scale(.98); }
+.btn-arte:disabled { background: #222; color: #444; transform: none; cursor: not-allowed; }
+
+/* ─── MODAL ─── */
+.modal {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,.92); backdrop-filter: blur(10px);
+  display: none; flex-direction: column;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 14px; padding-bottom: 50px;
+}
+.modal.open { display: flex; }
+.modal-inner {
+  background: #111; border: 1px solid var(--border); border-radius: 18px;
+  overflow: hidden; width: 100%; max-width: 520px; margin: auto;
+}
+.modal-hd {
+  padding: 15px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-t { font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 2px; }
+.modal-t em { color: var(--purple); font-style: normal; }
+.modal-x {
+  width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--border);
+  background: transparent; color: var(--sub); font-size: 18px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.modal-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+
+/* Steps log */
+.steps { width: 100%; background: var(--card2); border-radius: 10px; padding: 10px 12px; }
+.step { font-family: 'Space Mono'; font-size: 10px; color: #555; padding: 3px 0; display: flex; align-items: center; gap: 7px; }
+.step.active { color: var(--yellow); }
+.step.ok { color: var(--green); }
+.step.err { color: var(--red); }
+
+/* Card preview */
+.card-wrap {
+  width: 100%; position: relative; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.8);
+}
+.card-ratio { width: 100%; position: relative; }
+.card-ratio-inner { position: absolute; inset: 0; overflow: hidden; }
+.card-spin {
+  position: absolute; inset: 0; background: rgba(0,0,0,.85);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; z-index: 5; border-radius: 12px;
+}
+.card-spin.gone { display: none; }
+.spinner {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid #333; border-top-color: var(--purple);
+  animation: spin .9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-lbl { font-family: 'Space Mono'; font-size: 10px; color: var(--purple); letter-spacing: 1px; text-align: center; }
+
+.modal-status { font-family: 'Space Mono'; font-size: 11px; color: var(--sub); text-align: center; }
+.modal-status.ok { color: var(--green); }
+.modal-status.err { color: var(--red); }
+
+.btn-dl {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #6d28d9, #a855f7);
+  color: #fff; border: none; border-radius: 14px;
+  font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 3px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .15s;
+}
+.btn-dl:active { opacity: .85; }
+.btn-dl:disabled { background: #222; color: #444; cursor: not-allowed; }
+
+/* Hidden full-res render target */
+#RT {
+  position: fixed; left: -19999px; top: 0;
+  z-index: -1; overflow: hidden; pointer-events: none;
+}
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: #222; color: #fff; padding: 11px 20px; border-radius: 20px;
+  font-size: 13px; z-index: 9999; white-space: nowrap;
+  border: 1px solid #3a3a3a; animation: toastin .2s ease;
+}
+@keyframes toastin { from{opacity:0;transform:translate(-50%,10px)} to{opacity:1;transform:translateX(-50%)} }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">SQU<b>AD</b></div>
+  <div class="hdr-tag">GEMINI 2.0 FLASH</div>
+</div>
+
+<div class="page">
+
+  <!-- API KEY BOX -->
+  <div class="box">
+    <div class="box-title">// Gemini API Key</div>
+    <div class="key-status" id="keyStatus">Nenhuma key configurada</div>
+    <div class="key-row">
+      <input class="key-inp" id="keyInp" type="password" placeholder="Cole aqui (AIza...)"/>
+      <button class="btn-salvar" onclick="salvarKey()">Salvar</button>
+    </div>
+    <div class="key-link">
+      Grátis em <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
+    </div>
+  </div>
+
+  <!-- BRIEF -->
+  <div class="box">
+    <div class="box-title">// Brief Criativo</div>
+
+    <div class="field">
+      <label class="lbl">Marca / Cliente</label>
+      <input class="inp" id="fBrand" type="text" placeholder="Ex: Studio Fit, Café Noir..."/>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Nicho</label>
+      <div class="sel-wrap">
+        <select class="sel" id="fNiche">
+          <option value="">Selecione o nicho...</option>
+          <option>Moda e Lifestyle</option>
+          <option>Food e Gastronomia</option>
+          <option>Saude e Fitness</option>
+          <option>Negocios e Empreendedorismo</option>
+          <option>E-commerce e Produto</option>
+          <option>Beleza e Estetica</option>
+          <option>Tech e Startups</option>
+          <option>Imoveis</option>
+          <option>Educacao e Cursos</option>
+          <option>Financas e Investimentos</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Objetivo</label>
+      <div class="sel-wrap">
+        <select class="sel" id="fObj">
+          <option value="">Selecione o objetivo...</option>
+          <option>Engajamento maximo</option>
+          <option>Conversao e Vendas</option>
+          <option>Awareness e Branding</option>
+          <option>Lancamento de produto</option>
+          <option>Autoridade e Educacao</option>
+          <option>Oferta e Promocao</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Produto / Serviço / Tema</label>
+      <textarea class="ta" id="fDesc" placeholder="Descreva: o que é, para quem, oferta, diferencial, preço..."></textarea>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Tom Visual</label>
+      <div class="sel-wrap">
+        <select class="sel" id="fTone">
+          <option value="">Selecione o tom...</option>
+          <option>Premium e Luxo</option>
+          <option>Moderno e Bold</option>
+          <option>Inspirador e Emocional</option>
+          <option>Divertido e Jovem</option>
+          <option>Clean e Organico</option>
+          <option>Dark e Cinematografico</option>
+          <option>Corporativo e Profissional</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Público-Alvo (opcional)</label>
+      <input class="inp" id="fAud" type="text" placeholder="Ex: Mulheres 28-42, classe B..."/>
+    </div>
+  </div>
+
+  <!-- FORMAT -->
+  <div class="box">
+    <div class="box-title">// Formato do Card</div>
+    <div class="fmt-grid">
+      <div class="fmt-opt on" id="fmt0" onclick="selecionarFormato(0,1080,1080,'Feed 1:1')">
+        <div class="fmt-thumb" style="width:34px;height:34px"></div>
+        <div class="fmt-name">FEED</div>
+        <div class="fmt-size">1080×1080</div>
+      </div>
+      <div class="fmt-opt" id="fmt1" onclick="selecionarFormato(1,1080,1350,'Portrait 4:5')">
+        <div class="fmt-thumb" style="width:26px;height:34px"></div>
+        <div class="fmt-name">PORTRAIT</div>
+        <div class="fmt-size">1080×1350</div>
+      </div>
+      <div class="fmt-opt" id="fmt2" onclick="selecionarFormato(2,1080,1920,'Stories 9:16')">
+        <div class="fmt-thumb" style="width:18px;height:34px"></div>
+        <div class="fmt-name">STORIES</div>
+        <div class="fmt-size">1080×1920</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAUNCH -->
+  <button class="btn-launch" id="btnLaunch" onclick="iniciarSquad()">
+    ▶ ACIONAR SQUAD
+  </button>
+
+  <!-- PROGRESS -->
+  <div class="progress-box" id="progressBox">
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-info">
+      <span id="progLabel">Iniciando...</span>
+      <span id="progPct">0%</span>
+    </div>
+  </div>
+
+  <!-- AGENT LIST -->
+  <div id="agentList"></div>
+
+  <!-- PROMPT BOX (Foto) -->
+  <div class="prompt-box" id="promptBox">
+    <div class="prompt-lbl">PROMPT GERADO — MIDJOURNEY / POLLINATIONS</div>
+    <div class="prompt-txt" id="promptTxt"></div>
+    <button class="cp" onclick="copiar('promptTxt',this)">⎘ Copiar prompt</button>
+  </div>
+
+  <!-- LEGENDA -->
+  <div class="leg-box" id="legBox">
+    <div class="leg-lbl">LEGENDA INSTAGRAM</div>
+    <div class="leg-txt" id="legTxt"></div>
+    <button class="cp" onclick="copiar('legTxt',this)">⎘ Copiar legenda</button>
+  </div>
+
+  <!-- EXTRA OUTPUTS -->
+  <div id="extraOut"></div>
+
+  <!-- ARTE FINAL -->
+  <button class="btn-arte" id="btnArte" onclick="abrirModal()">
+    🎨 GERAR ARTE FINAL
+  </button>
+
+</div><!-- page -->
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-inner">
+    <div class="modal-hd">
+      <div class="modal-t">ARTE <em>FINAL</em></div>
+      <button class="modal-x" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="steps" id="stepList"></div>
+      <div class="modal-status" id="modalStatus">Aguardando...</div>
+
+      <div class="card-wrap" id="cardWrap">
+        <div class="card-spin" id="cardSpin">
+          <div class="spinner"></div>
+          <div class="spin-lbl" id="spinLbl">GERANDO IMAGEM...</div>
+        </div>
+        <div class="card-ratio" id="cardRatio">
+          <div class="card-ratio-inner" id="cardRatioInner"></div>
+        </div>
+      </div>
+
+      <button class="btn-dl" id="btnDl" onclick="baixarCard()" disabled>
+        ⬇ BAIXAR PNG
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN FULL-RES RENDER -->
+<div id="RT"></div>
+
+<script>
+(function() {
+'use strict';
+
+// ── STATE ──────────────────────────
+var KEY = '';
+var BRIEF = {};
+var OUTS = [];
+var FMT = { w: 1080, h: 1080, label: 'Feed 1:1' };
+var RUNNING = false;
+var MJ = '';
+
+// ── KEY ────────────────────────────
+window.salvarKey = function() {
+  var v = document.getElementById('keyInp').value.trim();
+  if (!v) { toast('Cole a API Key do Google AI Studio!'); return; }
+  if (!v.startsWith('AIza')) { toast('⚠️ Key inválida — deve começar com AIza'); return; }
+  KEY = v;
+  document.getElementById('keyInp').value = '';
+  document.getElementById('keyInp').placeholder = 'Key salva ✓';
+  var s = document.getElementById('keyStatus');
+  s.className = 'key-status ok';
+  s.textContent = 'Key configurada: ' + v.substring(0,12) + '...';
+  toast('✓ API Key salva com sucesso!');
+};
+
+// ── FORMAT ─────────────────────────
+window.selecionarFormato = function(i, w, h, label) {
+  [0,1,2].forEach(function(x) { document.getElementById('fmt'+x).classList.remove('on'); });
+  document.getElementById('fmt'+i).classList.add('on');
+  FMT = { w: w, h: h, label: label };
+};
+
+// ── AGENTS ─────────────────────────
+var AGENTS = [
+  {
+    ico: '🧠', name: 'ESTRATEGISTA',
+    role: 'Insight, conceito e arquitetura do post',
+    prompt: function() {
+      return 'Você é Estrategista de Conteúdo Sênior especializado em Instagram.\n' +
+        'Responda em português. Use **negrito** nos títulos.\n\n' +
+        'BRIEF:\nMarca: ' + BRIEF.brand + ' | Nicho: ' + BRIEF.niche +
+        ' | Objetivo: ' + BRIEF.obj + '\nProduto: ' + BRIEF.desc +
+        '\nTom: ' + BRIEF.tone + ' | Formato: ' + FMT.label + ' (' + FMT.w + 'x' + FMT.h + 'px)\n\n' +
+        '**DIAGNÓSTICO DO PÚBLICO**\nQuem é, qual dor, o que deseja, como age no Instagram.\n\n' +
+        '**INSIGHT ESTRATÉGICO**\nA descoberta não-óbvia que fundamenta este post.\n\n' +
+        '**ÂNGULO CRIATIVO**\nPor que este ângulo vai funcionar para este objetivo.\n\n' +
+        '**GANCHO CENTRAL**\nUma frase que para o scroll.\n\n' +
+        '**ELEMENTOS DO CARD**\nBadge, título, subtítulo, CTA visual.\n\n' +
+        '**KPIs DE SUCESSO**\nMétricas que indicam que o post performou.';
+    }
+  },
+  {
+    ico: '✍️', name: 'COPYWRITER',
+    role: 'Textos definitivos que entram no card visual',
+    prompt: function() {
+      return 'Você é Copywriter Sênior de resposta direta para Instagram.\n' +
+        'O texto do card tem 0,3-2 segundos para funcionar. Cada palavra conta.\n' +
+        'Responda em português.\n\n' +
+        'ESTRATÉGIA:\n' + (OUTS[0] || 'sem dados').substring(0,500) + '\n\n' +
+        'Marca: ' + BRIEF.brand + ' | Tom: ' + BRIEF.tone + '\n\n' +
+        'ENTREGUE EXATAMENTE NESTE FORMATO:\n\n' +
+        '**BADGE**\n[2-3 palavras MAIÚSCULO. Ex: NOVO, EXCLUSIVO. Vazio se não fizer sentido]\n\n' +
+        '**EYEBROW**\n[linha acima do headline, máx 5 palavras]\n\n' +
+        '**HEADLINE**\n[MAIÚSCULO, máx 5 palavras, irresistível]\n\n' +
+        '**SUBTEXT**\n[complemento, máx 12 palavras]\n\n' +
+        '**CTA**\n[chamada à ação, máx 4 palavras]\n\n' +
+        '**JUSTIFICATIVA**\n[Por que estas escolhas funcionam]';
+    }
+  },
+  {
+    ico: '📸', name: 'DIR. FOTOGRAFIA',
+    role: 'Prompt para geração de imagem por IA',
+    prompt: function() {
+      return 'Você é Diretor de Fotografia especializado em prompts para IA generativa.\n' +
+        'A imagem de fundo do card precisa: impacto visual, área inferior limpa para texto.\n' +
+        'Responda em português. O PROMPT DE IMAGEM deve ser em inglês.\n\n' +
+        'Nicho: ' + BRIEF.niche + ' | Tom: ' + BRIEF.tone + ' | Formato: ' + FMT.w + 'x' + FMT.h + '\n' +
+        'Copy: ' + (OUTS[1] || 'sem dados').substring(0,200) + '\n\n' +
+        '**CONCEITO DA IMAGEM**\nO que vai mostrar e por que é poderoso.\n\n' +
+        '**ESTILO FOTOGRÁFICO**\nFotografia, CGI, abstrato? Referência visual.\n\n' +
+        '**PROMPT DE IMAGEM**\n' +
+        '[Prompt completo em inglês: sujeito, ambiente, iluminação, mood, estilo, qualidade. ' +
+        'Área inferior da imagem deve ter menos elementos para caber o texto. ' +
+        'Finalizar com: professional photography, 8k resolution, cinematic, no text, no watermark]\n\n' +
+        '**TRATAMENTO DE COR**\nPaleta e como conversa com o design do card.';
+    }
+  },
+  {
+    ico: '🎨', name: 'DIR. DE ARTE',
+    role: 'Paleta HEX, fontes e sistema visual do card',
+    prompt: function() {
+      return 'Você é Diretor de Arte Sênior para Instagram de marcas globais.\n' +
+        'Retorne um CARD_JSON com cores HEX exatas.\n' +
+        'Responda em português.\n\n' +
+        'Nicho: ' + BRIEF.niche + ' | Tom: ' + BRIEF.tone + ' | Formato: ' + FMT.w + 'x' + FMT.h + '\n' +
+        'Copy: ' + (OUTS[1] || 'sem dados').substring(0,300) + '\n\n' +
+        '**CONCEITO VISUAL**\nQual escola de design e o que o layout comunica.\n\n' +
+        '**PALETA DE CORES** (HEX obrigatório)\nJustifique cada escolha.\n\n' +
+        '**TIPOGRAFIA**\nFontes Google Fonts com peso específico.\n\n' +
+        'RETORNE ESTE JSON NO FINAL (preencha com HEX reais, sem placeholders):\n' +
+        'CARD_JSON_START\n' +
+        '{"bg1":"#0a0a0a","bg2":"#1a1a2e","overlay":"rgba(0,0,0,0.65)","hlColor":"#FFFFFF","hlFont":"Bebas Neue","hlSize":' + (FMT.h>1500?110:FMT.h>1100?88:72) + ',"eyColor":"#FFCC00","eyFont":"Space Mono","stColor":"rgba(255,255,255,0.8)","stFont":"Inter","badgeBg":"#FF3C00","badgeFg":"#FFFFFF","ctaColor":"#FFFFFF","acc1":"#FF3C00","acc2":"#FFCC00","decor":"rgba(255,255,255,0.04)"}\n' +
+        'CARD_JSON_END';
+    }
+  },
+  {
+    ico: '💬', name: 'COPY LEGENDA',
+    role: 'Legenda poderosa e hashtags estratégicas',
+    prompt: function() {
+      return 'Você é especialista em Copy para Instagram que gera engajamento real.\n' +
+        'A legenda aprofunda o card — não repete.\nResponda em português.\n\n' +
+        'Marca: ' + BRIEF.brand + ' | Objetivo: ' + BRIEF.obj + ' | Tom: ' + BRIEF.tone + '\n' +
+        'O que está no card: ' + (OUTS[1] || 'sem dados').substring(0,200) + '\n\n' +
+        '**HOOK** (antes do "ver mais" — máx 125 chars — CRÍTICO)\n[Provocador ou promessa forte]\n\n' +
+        '**CORPO**\n[4-5 parágrafos curtos com emojis. Storytelling ou benefícios.]\n\n' +
+        '**CTA PRINCIPAL**\n[Ação específica]\n\n' +
+        '**CTA SECUNDÁRIO**\n[Salvar, marcar, compartilhar]\n\n' +
+        '**HASHTAGS**\n[25 hashtags: 5 mega + 8 grandes + 8 médias + 4 nicho]\n\n' +
+        '**MELHOR HORÁRIO**\n[Dia + hora + justificativa]';
+    }
+  },
+  {
+    ico: '📊', name: 'TRÁFEGO PAGO',
+    role: 'Meta Ads: segmentação e estratégia de mídia',
+    prompt: function() {
+      return 'Você é Especialista em Meta Ads com 10 anos de experiência.\nResponda em português.\n\n' +
+        'Objetivo: ' + BRIEF.obj + ' | Nicho: ' + BRIEF.niche + ' | Formato: ' + FMT.label + '\n' +
+        'Copy: ' + (OUTS[1] || 'sem dados').substring(0,200) + '\n\n' +
+        '**COPY PARA ANÚNCIO**\nTexto principal (máx 125): | Headline (máx 40): | Descrição (máx 30):\n\n' +
+        '**OBJETIVO META ADS**\n[Qual usar e por quê]\n\n' +
+        '**SEGMENTAÇÃO**\nInteresses + comportamentos + demografia\n\n' +
+        '**ESTRUTURA DE CAMPANHA**\nOrçamento diário + duração\n\n' +
+        '**TESTE A/B**\nVariação A: | Variação B: | Critério de vencedor:\n\n' +
+        '**MÉTRICAS ESPERADAS**\nCTR: | CPM: | CPC: | ROAS mínimo:';
+    }
+  },
+  {
+    ico: '🏆', name: 'DIR. CRIATIVO',
+    role: 'Revisão final e checklist de publicação',
+    prompt: function() {
+      return 'Você é o Diretor Criativo Executivo da agência.\nRevisão cirúrgica e honesta.\nResponda em português.\n\n' +
+        'Marca: ' + BRIEF.brand + ' | Objetivo: ' + BRIEF.obj + '\n' +
+        'Copy: ' + (OUTS[1] || '').substring(0,150) + '\n' +
+        'Legenda: ' + (OUTS[4] || '').substring(0,150) + '\n\n' +
+        '**AVALIAÇÃO** (nota 0-10)\nEstratégia: | Copy: | Arte: | Foto: | Legenda: | Tráfego:\n\n' +
+        '**COERÊNCIA**\nCard e legenda se complementam?\n\n' +
+        '**PONTOS FORTES**\n\n' +
+        '**AJUSTES CRÍTICOS** (máx 3)\n\n' +
+        '**CHECKLIST DE PUBLICAÇÃO**\n- [ ] Revisão ortográfica\n- [ ] Links testados\n' +
+        '- [ ] Resolução correta\n- [ ] CTA claro\n- [ ] Hashtags verificadas\n' +
+        '- [ ] Horário definido\n- [ ] Pixel e UTMs\n\n' +
+        '**SCORE FINAL**\nNota: /10 | Probabilidade acima da média: %\nVeredicto: APROVADO / COM AJUSTES / REFAZER';
+    }
+  }
+];
+
+// ── BUILD AGENT LIST ────────────────
+(function buildList() {
+  var el = document.getElementById('agentList');
+  var html = '';
+  AGENTS.forEach(function(ag, i) {
+    html +=
+      '<div class="agent" id="ag' + i + '">' +
+        '<div class="agent-hd" onclick="toggleAg(' + i + ')">' +
+          '<div class="agent-ico">' + ag.ico + '</div>' +
+          '<div class="agent-meta">' +
+            '<div class="agent-n">AGENTE 0' + (i+1) + '</div>' +
+            '<div class="agent-nm">' + ag.name + '</div>' +
+            '<div class="agent-rl">' + ag.role + '</div>' +
+          '</div>' +
+          '<div class="agent-tag" id="tag' + i + '">IDLE</div>' +
+        '</div>' +
+        '<div class="agent-bd" id="bd' + i + '">' +
+          '<div class="agent-txt" id="txt' + i + '"></div>' +
+        '</div>' +
+      '</div>';
+  });
+  el.innerHTML = html;
+})();
+
+window.toggleAg = function(i) {
+  document.getElementById('bd' + i).classList.toggle('open');
+};
+
+// ── GEMINI API ──────────────────────
+function chamarGemini(prompt, cb) {
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + KEY;
+  var body = JSON.stringify({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { maxOutputTokens: 1200, temperature: 0.85 }
+  });
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', url, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.timeout = 90000;
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status === 0) { cb('Erro de rede — verifique sua conexão.', null); return; }
+    var data;
+    try { data = JSON.parse(xhr.responseText); } catch(e) { cb('Resposta inválida da API.', null); return; }
+    if (data.error) { cb('Gemini: ' + (data.error.message || JSON.stringify(data.error)), null); return; }
+    var text = '';
+    try { text = data.candidates[0].content.parts[0].text; } catch(e) { cb('Resposta vazia.', null); return; }
+    cb(null, text);
+  };
+  xhr.ontimeout = function() { cb('Timeout — tente novamente.', null); };
+  xhr.onerror = function() { cb('Erro de rede — verifique conexão.', null); };
+
+  xhr.send(body);
+}
+
+// ── LAUNCH ─────────────────────────
+window.iniciarSquad = function() {
+  if (RUNNING) return;
+  if (!KEY) { toast('⚠️ Configure e salve a API Key primeiro!'); return; }
+  if (!document.getElementById('fDesc').value.trim()) { toast('⚠️ Descreva o produto/serviço!'); return; }
+
+  BRIEF = {
+    brand: document.getElementById('fBrand').value.trim() || 'Marca',
+    niche: document.getElementById('fNiche').value || 'geral',
+    obj: document.getElementById('fObj').value || 'engajamento',
+    desc: document.getElementById('fDesc').value.trim(),
+    tone: document.getElementById('fTone').value || 'moderno',
+    aud: document.getElementById('fAud').value.trim()
+  };
+
+  RUNNING = true;
+  OUTS = [];
+  MJ = '';
+
+  // Reset
+  AGENTS.forEach(function(_, i) {
+    var el = document.getElementById('ag' + i);
+    el.classList.remove('running', 'done');
+    document.getElementById('tag' + i).textContent = 'IDLE';
+    document.getElementById('bd' + i).classList.remove('open');
+    document.getElementById('txt' + i).innerHTML = '';
+  });
+  document.getElementById('promptBox').classList.remove('show');
+  document.getElementById('legBox').classList.remove('show');
+  document.getElementById('extraOut').innerHTML = '';
+  document.getElementById('btnArte').classList.remove('show');
+
+  var btn = document.getElementById('btnLaunch');
+  btn.disabled = true;
+  btn.textContent = '⏳ SQUAD EM AÇÃO...';
+  document.getElementById('progressBox').classList.add('show');
+
+  rodarAgente(0);
+};
+
+function rodarAgente(i) {
+  if (i >= AGENTS.length) {
+    setProgresso(AGENTS.length);
+    var btn = document.getElementById('btnLaunch');
+    btn.disabled = false;
+    btn.textContent = '▶ ACIONAR SQUAD';
+    RUNNING = false;
+    document.getElementById('btnArte').classList.add('show');
+    toast('✓ Squad concluído! Gere a arte final.');
+    document.getElementById('btnArte').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // Running state
+  setProgresso(i);
+  var card = document.getElementById('ag' + i);
+  card.classList.add('running');
+  card.classList.remove('done');
+  document.getElementById('tag' + i).textContent = 'RUN';
+  var bd = document.getElementById('bd' + i);
+  bd.classList.add('open');
+  document.getElementById('txt' + i).innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  var prompt = AGENTS[i].prompt();
+
+  chamarGemini(prompt, function(err, result) {
+    if (err) {
+      OUTS.push('');
+      var msg = '⚠️ Erro: ' + err;
+      document.getElementById('txt' + i).innerHTML = renderTxt(msg);
+    } else {
+      OUTS.push(result);
+      document.getElementById('txt' + i).innerHTML = renderTxt(result.substring(0, 450) + (result.length > 450 ? '…' : ''));
+    }
+    card.classList.remove('running');
+    card.classList.add('done');
+    document.getElementById('tag' + i).textContent = err ? '⚠' : '✓';
+
+    processarSaida(i, err ? '' : result);
+
+    setTimeout(function() { rodarAgente(i + 1); }, 150);
+  });
+}
+
+function processarSaida(i, text) {
+  // Agente 2 = fotógrafo → extrai prompt
+  if (i === 2) {
+    var m = text.match(/\*\*PROMPT DE IMAGEM\*\*\n?([\s\S]+?)(?:\n\n\*\*|$)/i);
+    MJ = m ? m[1].trim().replace(/^```\w*\n?/, '').replace(/```$/, '').trim() : '';
+    if (!MJ) MJ = BRIEF.niche + ' professional atmosphere, cinematic lighting, 8k, no text, no watermark';
+    document.getElementById('promptTxt').textContent = MJ;
+    document.getElementById('promptBox').classList.add('show');
+  }
+
+  // Agente 4 = legenda
+  if (i === 4) {
+    document.getElementById('legTxt').textContent = text.replace(/\*\*/g, '');
+    document.getElementById('legBox').classList.add('show');
+
+    var extra = '';
+    [{t:'🎨 DIR. DE ARTE', idx:3},{t:'📸 DIR. FOTOGRAFIA', idx:2},{t:'✍️ COPY DO CARD', idx:1},{t:'🧠 ESTRATÉGIA', idx:0}]
+    .forEach(function(d) {
+      extra +=
+        '<div class="out-box">' +
+          '<div class="out-hd" onclick="toggleOut(\'ob'+d.idx+'\')">' +
+            '<div class="out-hd-title">' + d.t + '</div>' +
+            '<span style="color:var(--sub)">▾</span>' +
+          '</div>' +
+          '<div class="out-bd" id="ob'+d.idx+'">' + renderTxt(OUTS[d.idx]||'') + '</div>' +
+        '</div>';
+    });
+    document.getElementById('extraOut').innerHTML = extra;
+  }
+
+  if (i === 5) {
+    document.getElementById('extraOut').innerHTML +=
+      '<div class="out-box">' +
+        '<div class="out-hd" onclick="toggleOut(\'obT\')">' +
+          '<div class="out-hd-title">📊 TRÁFEGO PAGO</div>' +
+          '<span style="color:var(--sub)">▾</span>' +
+        '</div>' +
+        '<div class="out-bd" id="obT">' + renderTxt(text) + '</div>' +
+      '</div>';
+  }
+
+  if (i === 6) {
+    document.getElementById('extraOut').innerHTML +=
+      '<div class="out-box" style="border-color:rgba(255,204,0,.3)">' +
+        '<div class="out-hd" onclick="toggleOut(\'obDC\')">' +
+          '<div class="out-hd-title">🏆 REVISÃO FINAL — DIR. CRIATIVO</div>' +
+          '<span style="color:var(--sub)">▾</span>' +
+        '</div>' +
+        '<div class="out-bd open" id="obDC">' + renderTxt(text) + '</div>' +
+      '</div>';
+  }
+}
+
+function setProgresso(cur) {
+  var pct = Math.round(cur / AGENTS.length * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '%';
+  document.getElementById('progLabel').textContent = cur < AGENTS.length
+    ? 'Agente ' + (cur+1) + ': ' + AGENTS[cur].name
+    : '✓ Pipeline concluído!';
+}
+
+// ── ARTE FINAL ─────────────────────
+window.abrirModal = function() {
+  var modal = document.getElementById('modal');
+  modal.classList.add('open');
+  document.getElementById('cardSpin').classList.remove('gone');
+  document.getElementById('spinLbl').textContent = 'INICIANDO...';
+  document.getElementById('modalStatus').className = 'modal-status';
+  document.getElementById('modalStatus').textContent = 'Gerando imagem com Pollinations AI...';
+  document.getElementById('btnDl').disabled = true;
+  document.getElementById('stepList').innerHTML = '';
+  document.getElementById('cardRatioInner').innerHTML = '';
+  document.getElementById('btnArte').disabled = true;
+
+  // Set ratio
+  var ratio = FMT.h / FMT.w * 100;
+  document.getElementById('cardRatio').style.paddingTop = ratio + '%';
+
+  document.getElementById('RT').style.cssText = 'position:fixed;left:-19999px;top:0;width:' + FMT.w + 'px;height:' + FMT.h + 'px;overflow:hidden;z-index:-1;';
+
+  artSteps = [];
+  gerarArte();
+};
+
+var artSteps = [];
+function addStep(txt) {
+  if (artSteps.length > 0) artSteps[artSteps.length-1].done = true;
+  artSteps.push({ txt: txt, done: false, err: false });
+  renderSteps();
+  document.getElementById('spinLbl').textContent = txt.toUpperCase().substring(0,20);
+}
+function stepErr() {
+  if (artSteps.length > 0) { artSteps[artSteps.length-1].err = true; artSteps[artSteps.length-1].done = false; }
+  renderSteps();
+}
+function renderSteps() {
+  document.getElementById('stepList').innerHTML = artSteps.map(function(s) {
+    var cls = s.done ? 'ok' : s.err ? 'err' : 'active';
+    var ico = s.done ? '✓' : s.err ? '✕' : '●';
+    return '<div class="step ' + cls + '">' + ico + ' ' + s.txt + '</div>';
+  }).join('');
+}
+
+function gerarArte() {
+  addStep('Gerando imagem via Pollinations AI...');
+
+  var seed = Math.floor(Math.random() * 99999);
+  var encoded = encodeURIComponent(MJ.substring(0, 350));
+  var imgUrl = 'https://image.pollinations.ai/prompt/' + encoded +
+    '?width=' + FMT.w + '&height=' + FMT.h + '&seed=' + seed + '&model=flux&nologo=true&enhance=true';
+
+  var imgEl = new Image();
+  imgEl.crossOrigin = 'anonymous';
+
+  var timer = setTimeout(function() {
+    addStep('Timeout — usando gradiente como fundo...');
+    montarCard(null);
+  }, 20000);
+
+  imgEl.onload = function() {
+    clearTimeout(timer);
+    addStep('Imagem gerada! Montando card...');
+    montarCard(imgEl);
+  };
+  imgEl.onerror = function() {
+    clearTimeout(timer);
+    addStep('Imagem não carregou — usando gradiente...');
+    montarCard(null);
+  };
+  imgEl.src = imgUrl;
+}
+
+function montarCard(imgEl) {
+  // Parse style JSON
+  var cs = {};
+  var sm = (OUTS[3] || '').match(/CARD_JSON_START\s*([\s\S]*?)\s*CARD_JSON_END/);
+  if (sm) { try { cs = JSON.parse(sm[1].trim()); } catch(e) {} }
+
+  var C = {
+    bg1: cs.bg1 || '#0a0a0a',
+    bg2: cs.bg2 || '#1a1a2e',
+    overlay: cs.overlay || 'rgba(0,0,0,0.65)',
+    hlColor: cs.hlColor || '#FFFFFF',
+    hlFont: cs.hlFont || 'Bebas Neue',
+    hlSize: parseInt(cs.hlSize) || (FMT.h > 1500 ? 110 : FMT.h > 1100 ? 88 : 72),
+    eyColor: cs.eyColor || '#FFCC00',
+    stColor: cs.stColor || 'rgba(255,255,255,0.8)',
+    badgeBg: cs.badgeBg || '#FF3C00',
+    badgeFg: cs.badgeFg || '#FFFFFF',
+    ctaColor: cs.ctaColor || '#FFFFFF',
+    acc1: cs.acc1 || '#FF3C00',
+    acc2: cs.acc2 || '#FFCC00',
+    decor: cs.decor || 'rgba(255,255,255,0.04)'
+  };
+
+  function gF(label) {
+    var rx = new RegExp('\\*\\*' + label + '\\*\\*\\n([^\\n\\*]+)', 'i');
+    var m = (OUTS[1] || '').match(rx);
+    return m ? m[1].trim().replace(/^\[|\]$/g,'') : '';
+  }
+
+  var badge    = gF('BADGE');
+  var eyebrow  = gF('EYEBROW');
+  var headline = gF('HEADLINE') || BRIEF.brand.toUpperCase();
+  var subtext  = gF('SUBTEXT');
+  var cta      = gF('CTA');
+  var brandTag = '@' + BRIEF.brand.toLowerCase().replace(/\s+/g,'');
+
+  var W = FMT.w, H = FMT.h;
+  var pad = Math.round(W * 0.065);
+  var hl = C.hlSize;
+
+  // Build background
+  var bgCss;
+  if (imgEl) {
+    var cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var ctx = cv.getContext('2d');
+    var iR = imgEl.naturalWidth / imgEl.naturalHeight;
+    var cR = W / H;
+    var dw, dh, dx, dy;
+    if (iR > cR) { dh=H; dw=H*iR; dx=(W-dw)/2; dy=0; }
+    else { dw=W; dh=W/iR; dx=0; dy=(H-dh)/2; }
+    ctx.drawImage(imgEl, dx, dy, dw, dh);
+    bgCss = 'background-image:url(' + cv.toDataURL('image/jpeg',0.9) + ');background-size:cover;';
+  } else {
+    bgCss = 'background:linear-gradient(160deg,' + C.bg1 + ' 0%,' + C.bg2 + ' 100%);';
+  }
+
+  // Build card element
+  function el(tag, css, txt) {
+    var d = document.createElement(tag);
+    d.style.cssText = css;
+    if (txt !== undefined) d.textContent = txt;
+    return d;
+  }
+
+  var card = el('div', 'position:relative;width:' + W + 'px;height:' + H + 'px;overflow:hidden;' + bgCss);
+
+  // Dark gradient overlay
+  card.appendChild(el('div', 'position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.4) 55%,rgba(0,0,0,0.08) 100%);'));
+
+  // Decor circles (SVG)
+  var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
+  function circle(cx,cy,r) {
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill',C.decor);
+    return c;
+  }
+  svg.appendChild(circle(Math.round(W*.84), Math.round(H*.11), Math.round(W*.18)));
+  svg.appendChild(circle(Math.round(W*.08), Math.round(H*.38), Math.round(W*.09)));
+  card.appendChild(svg);
+
+  // Badge
+  if (badge) {
+    var bfs = Math.round(hl*.16);
+    card.appendChild(el('div',
+      'position:absolute;top:'+pad+'px;left:'+pad+'px;' +
+      'background:'+C.badgeBg+';color:'+C.badgeFg+';' +
+      'font-family:Space Mono,monospace;font-size:'+bfs+'px;letter-spacing:3px;' +
+      'padding:'+Math.round(bfs*.5)+'px '+Math.round(bfs*1.1)+'px;' +
+      'border-radius:4px;text-transform:uppercase;z-index:10;',
+      badge));
+  }
+
+  // Brand tag
+  card.appendChild(el('div',
+    'position:absolute;top:'+pad+'px;right:'+pad+'px;' +
+    'font-family:Space Mono,monospace;font-size:'+Math.round(hl*.13)+'px;' +
+    'color:rgba(255,255,255,0.35);letter-spacing:2px;z-index:10;',
+    brandTag));
+
+  // Content block
+  var content = el('div', 'position:absolute;bottom:'+Math.round(pad*1.4)+'px;left:'+pad+'px;right:'+pad+'px;z-index:10;');
+
+  if (eyebrow) {
+    content.appendChild(el('div',
+      'font-family:Space Mono,monospace;font-size:'+Math.round(hl*.19)+'px;' +
+      'color:'+C.eyColor+';letter-spacing:4px;text-transform:uppercase;' +
+      'margin-bottom:'+Math.round(hl*.12)+'px;',
+      eyebrow));
+  }
+
+  var hlEl = el('div',
+    'font-family:'+C.hlFont+',Impact,sans-serif;font-weight:700;' +
+    'font-size:'+hl+'px;color:'+C.hlColor+';line-height:1.0;' +
+    'text-transform:uppercase;letter-spacing:1px;' +
+    'margin-bottom:'+Math.round(hl*.14)+'px;' +
+    'text-shadow:0 2px 30px rgba(0,0,0,0.7);',
+    headline);
+  content.appendChild(hlEl);
+
+  if (subtext) {
+    content.appendChild(el('div',
+      'font-family:Inter,sans-serif;font-size:'+Math.round(hl*.21)+'px;' +
+      'color:'+C.stColor+';line-height:1.45;' +
+      'margin-bottom:'+Math.round(hl*.22)+'px;',
+      subtext));
+  }
+
+  if (cta) {
+    var ctaSize = Math.round(hl*.17);
+    content.appendChild(el('div',
+      'display:inline-block;font-family:Space Mono,monospace;font-size:'+ctaSize+'px;' +
+      'color:'+C.ctaColor+';border:1px solid rgba(255,255,255,0.4);' +
+      'padding:'+Math.round(ctaSize*.6)+'px '+Math.round(ctaSize*1.4)+'px;' +
+      'letter-spacing:2px;text-transform:uppercase;border-radius:3px;',
+      cta));
+  }
+
+  card.appendChild(content);
+
+  // Accent line
+  card.appendChild(el('div',
+    'position:absolute;bottom:0;left:0;right:0;height:4px;' +
+    'background:linear-gradient(90deg,'+C.acc1+','+C.acc2+');'));
+
+  // Insert into hidden render target
+  var rt = document.getElementById('RT');
+  rt.innerHTML = '';
+  rt.appendChild(card);
+
+  // Wait for fonts to load then show preview
+  setTimeout(function() {
+    var wrapW = document.getElementById('cardWrap').offsetWidth;
+    var scale = wrapW / W;
+
+    var inner = document.getElementById('cardRatioInner');
+    inner.innerHTML = '';
+
+    var scaleDiv = document.createElement('div');
+    scaleDiv.style.cssText = 'position:absolute;top:0;left:0;width:'+W+'px;height:'+H+'px;' +
+      'transform:scale('+scale+');transform-origin:top left;';
+    scaleDiv.appendChild(card.cloneNode(true));
+    inner.appendChild(scaleDiv);
+
+    document.getElementById('cardSpin').classList.add('gone');
+    document.getElementById('modalStatus').className = 'modal-status ok';
+    document.getElementById('modalStatus').textContent = '✓ Arte gerada! Verifique e baixe abaixo.';
+    document.getElementById('btnDl').disabled = false;
+    document.getElementById('btnArte').disabled = false;
+
+    if (artSteps.length > 0) artSteps[artSteps.length-1].done = true;
+    renderSteps();
+  }, 800);
+}
+
+// ── DOWNLOAD ───────────────────────
+window.baixarCard = function() {
+  var btn = document.getElementById('btnDl');
+  btn.disabled = true; btn.textContent = '⏳ CAPTURANDO...';
+
+  var rt = document.getElementById('RT');
+  var cardEl = rt.firstElementChild;
+  if (!cardEl) { toast('⚠️ Gere a arte primeiro!'); btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG'; return; }
+
+  // Move on-screen temporarily
+  rt.style.left = '0';
+  rt.style.zIndex = '9999';
+
+  setTimeout(function() {
+    html2canvas(cardEl, {
+      width: FMT.w, height: FMT.h, scale: 1,
+      useCORS: true, allowTaint: true,
+      backgroundColor: null, logging: false
+    }).then(function(canvas) {
+      rt.style.left = '-19999px'; rt.style.zIndex = '-1';
+      canvas.toBlob(function(blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = BRIEF.brand.replace(/\s+/g,'-').toLowerCase() + '-' + FMT.w + 'x' + FMT.h + '.png';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
+        btn.textContent = '✓ BAIXADO!';
+        toast('✓ PNG salvo com sucesso!');
+        setTimeout(function() { btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG'; }, 3000);
+      }, 'image/png', 1.0);
+    }).catch(function() {
+      rt.style.left = '-19999px'; rt.style.zIndex = '-1';
+      // HTML fallback
+      var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box}body{width:'+FMT.w+'px;height:'+FMT.h+'px;overflow:hidden}</style></head><body>' + rt.innerHTML + '</body></html>';
+      var b = new Blob([html], {type:'text/html'});
+      var u = URL.createObjectURL(b);
+      var a = document.createElement('a');
+      a.href = u; a.download = BRIEF.brand.replace(/\s+/g,'-').toLowerCase()+'.html';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(u);
+      btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG';
+      toast('Salvo como HTML — abra no Chrome e tire screenshot');
+    });
+  }, 500);
+};
+
+window.fecharModal = function() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('btnArte').disabled = false;
+};
+
+// ── HELPERS ────────────────────────
+window.toggleOut = function(id) { document.getElementById(id).classList.toggle('open'); };
+
+window.copiar = function(id, btn) {
+  var t = document.getElementById(id).textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(function() { flashBtn(btn); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = t; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    flashBtn(btn);
+  }
+  function flashBtn(b) {
+    var o = b.textContent; b.textContent = '✓ Copiado!';
+    setTimeout(function() { b.textContent = o; }, 2000);
+  }
+};
+
+function renderTxt(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+}
+
+function toast(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 2800);
+}
+
+})();
+</script>
+</body>
+</html>
