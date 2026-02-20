@@ -731,7 +731,8 @@ window.toggleAg = function(i) {
 
 // ── GEMINI API ──────────────────────
 function chamarGemini(prompt, cb) {
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + KEY;
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + encodeURIComponent(KEY);
+
   var body = JSON.stringify({
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: { maxOutputTokens: 1200, temperature: 0.85 }
@@ -742,18 +743,29 @@ function chamarGemini(prompt, cb) {
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.timeout = 90000;
 
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-    if (xhr.status === 0) { cb('Erro de rede — verifique sua conexão.', null); return; }
+  xhr.onload = function() {
+    var raw = xhr.responseText || '';
+    // Mostra status e um pedaço do retorno quando der ruim
+    if (xhr.status < 200 || xhr.status >= 300) {
+      cb('HTTP ' + xhr.status + ' — ' + raw.slice(0, 400), null);
+      return;
+    }
     var data;
-    try { data = JSON.parse(xhr.responseText); } catch(e) { cb('Resposta inválida da API.', null); return; }
+    try { data = JSON.parse(raw); }
+    catch(e) { cb('JSON inválido — ' + raw.slice(0, 400), null); return; }
+
     if (data.error) { cb('Gemini: ' + (data.error.message || JSON.stringify(data.error)), null); return; }
-    var text = '';
-    try { text = data.candidates[0].content.parts[0].text; } catch(e) { cb('Resposta vazia.', null); return; }
-    cb(null, text);
+
+    try {
+      var text = data.candidates[0].content.parts[0].text;
+      cb(null, text);
+    } catch(e) {
+      cb('Resposta vazia/inesperada — ' + raw.slice(0, 400), null);
+    }
   };
-  xhr.ontimeout = function() { cb('Timeout — tente novamente.', null); };
-  xhr.onerror = function() { cb('Erro de rede — verifique conexão.', null); };
+
+  xhr.onerror = function() { cb('Erro de rede/CORS/CSP (ver DevTools)', null); };
+  xhr.ontimeout = function() { cb('Timeout — tente novamente', null); };
 
   xhr.send(body);
 }
