@@ -3,363 +3,393 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SQUAD — Card Creator</title>
+<title>SQUAD — Instagram Card Creator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{font-size:16px}
-body{
-  background:#0c0c0c;color:#f0f0f0;
-  font-family:'Inter',system-ui,sans-serif;
-  min-height:100vh;overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body {
+  background: #0c0c0c; color: #f0f0f0;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100%; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* HEADER */
-.hdr{
-  position:sticky;top:0;z-index:200;
-  background:rgba(12,12,12,.97);backdrop-filter:blur(12px);
-  border-bottom:1px solid #2a2a2a;
-  padding:12px 16px;
-  display:flex;align-items:center;justify-content:space-between;
+.hdr {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(12,12,12,.97); backdrop-filter: blur(12px);
+  border-bottom: 1px solid #222;
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
 }
-.logo{font-family:'Bebas Neue';font-size:20px;letter-spacing:5px}
-.logo span{color:#ff3c00}
-.live-badge{
-  font-family:'Space Mono';font-size:9px;color:#22c55e;
-  border:1px solid rgba(34,197,94,.4);border-radius:6px;
-  padding:3px 9px;display:flex;align-items:center;gap:5px;
+.logo { font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 5px; }
+.logo b { color: #ff3c00; font-weight: 400; }
+.badge-live {
+  font-family: 'Space Mono'; font-size: 9px; color: #22c55e;
+  border: 1px solid rgba(34,197,94,.35); border-radius: 20px;
+  padding: 4px 10px; display: flex; align-items: center; gap: 5px;
 }
-.live-badge::before{
-  content:'';width:5px;height:5px;border-radius:50%;
-  background:#22c55e;animation:blink 2s infinite;flex-shrink:0;
+.badge-live::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: #22c55e; animation: blink 2s infinite; flex-shrink: 0;
 }
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
 
-/* PAGE WRAPPER */
-.page{
-  width:100%;max-width:520px;
-  margin:0 auto;padding:14px 14px 80px;
-}
+/* PAGE */
+.page { padding: 14px 14px 80px; max-width: 520px; margin: 0 auto; }
 
-/* BOX */
-.box{
-  background:#161616;border:1px solid #2a2a2a;border-radius:14px;
-  padding:16px;margin-bottom:12px;
+/* BOX CARD */
+.box {
+  background: #161616; border: 1px solid #242424;
+  border-radius: 14px; padding: 16px; margin-bottom: 10px;
 }
-.box-lbl{
-  font-family:'Space Mono';font-size:9px;letter-spacing:2px;
-  color:#ff3c00;text-transform:uppercase;margin-bottom:13px;
-  display:flex;align-items:center;gap:8px;
+.box-title {
+  font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px;
+  color: #ff3c00; text-transform: uppercase; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
 }
-.box-lbl::after{content:'';flex:1;height:1px;background:#2a2a2a}
+.box-title::after { content: ''; flex: 1; height: 1px; background: #242424; }
 
 /* KEY BOX */
-.key-saved{
-  display:flex;align-items:center;gap:8px;
-  background:#0d1f14;border:1px solid rgba(34,197,94,.3);
-  border-radius:10px;padding:10px 13px;margin-bottom:10px;
-  font-size:13px;color:#22c55e;font-family:'Space Mono';
+.key-status {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 13px; border-radius: 10px; margin-bottom: 10px;
+  font-size: 13px; font-family: 'Space Mono';
 }
-.key-saved.hidden{display:none}
-.key-saved .ic{font-size:16px;flex-shrink:0}
-.key-form{display:flex;gap:8px}
-.key-inp{
-  flex:1;min-width:0;
-  background:#1e1e1e;border:1px solid #2a2a2a;color:#f0f0f0;
-  padding:11px 12px;border-radius:10px;
-  font-family:'Space Mono';font-size:12px;outline:none;
-  transition:border-color .2s;
+.key-status.has-key {
+  background: #071a0e; border: 1px solid rgba(34,197,94,.3);
+  color: #22c55e;
 }
-.key-inp:focus{border-color:#38bdf8}
-.key-inp.error{border-color:#ef4444;animation:shake .3s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-.btn-key{
-  background:#38bdf8;color:#000;border:none;
-  padding:11px 16px;border-radius:10px;
-  font-family:'Inter';font-size:14px;font-weight:700;
-  cursor:pointer;flex-shrink:0;white-space:nowrap;
+.key-status.no-key {
+  background: #1a1a1a; border: 1px solid #2a2a2a;
+  color: #666;
 }
-.btn-key:active{opacity:.8}
-.btn-key-reset{
-  background:transparent;border:none;
-  color:#ef4444;font-size:12px;cursor:pointer;
-  text-decoration:underline;padding:0;margin-top:6px;display:block;
+.key-row { display: flex; gap: 8px; }
+.key-inp {
+  flex: 1; min-width: 0;
+  background: #1a1a1a; border: 1px solid #2a2a2a; color: #f0f0f0;
+  padding: 11px 12px; border-radius: 10px;
+  font-family: 'Space Mono'; font-size: 12px; outline: none;
+  transition: border-color .2s;
 }
-.key-hint{font-size:12px;color:#555;margin-top:7px}
-.key-hint a{color:#38bdf8;text-decoration:none}
+.key-inp:focus { border-color: #38bdf8; }
+.key-btn {
+  background: #38bdf8; color: #000; border: none;
+  padding: 11px 16px; border-radius: 10px;
+  font-weight: 700; font-size: 14px; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0;
+}
+.key-btn:active { opacity: .8; }
+.key-clear {
+  background: #1a1a1a; border: 1px solid #2a2a2a; color: #666;
+  padding: 11px 14px; border-radius: 10px;
+  font-size: 13px; cursor: pointer; flex-shrink: 0;
+}
+.key-hint { font-size: 12px; color: #555; margin-top: 8px; line-height: 1.6; }
+.key-hint a { color: #38bdf8; text-decoration: none; }
 
-/* FIELDS */
-.field{margin-bottom:11px}
-.field:last-child{margin-bottom:0}
-.lbl{display:block;font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
-.inp,.sel,.ta{
-  display:block;width:100%;
-  background:#1e1e1e;border:1px solid #2a2a2a;color:#f0f0f0;
-  padding:12px 13px;border-radius:10px;
-  font-family:'Inter';font-size:15px;outline:none;
-  transition:border-color .2s;appearance:none;-webkit-appearance:none;
+/* FORM FIELDS */
+.f { margin-bottom: 11px; }
+.f:last-child { margin-bottom: 0; }
+.f label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .3px; }
+.inp, .sel, .ta {
+  display: block; width: 100%;
+  background: #1a1a1a; border: 1px solid #2a2a2a; color: #f0f0f0;
+  padding: 12px 14px; border-radius: 10px;
+  font-family: 'Inter'; font-size: 15px; outline: none;
+  transition: border-color .2s; appearance: none; -webkit-appearance: none;
 }
-.inp:focus,.sel:focus,.ta:focus{border-color:#ff3c00}
-.sel-w{position:relative}
-.sel-w::after{
-  content:'▾';position:absolute;right:13px;top:50%;
-  transform:translateY(-50%);color:#555;pointer-events:none;
+.inp:focus, .sel:focus, .ta:focus { border-color: #ff3c00; }
+.sel-w { position: relative; }
+.sel-w::after {
+  content: '▾'; position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%); color: #555;
+  pointer-events: none; font-size: 14px;
 }
-.sel{padding-right:34px}
-.sel option{background:#1a1a1a}
-.ta{resize:vertical;min-height:80px;line-height:1.5}
+.sel { padding-right: 36px; }
+.sel option { background: #1a1a1a; }
+.ta { resize: vertical; min-height: 80px; line-height: 1.5; }
 
 /* FORMAT */
-.fmt-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.fmt-btn{
-  background:#1e1e1e;border:1.5px solid #2a2a2a;border-radius:12px;
-  padding:12px 6px;cursor:pointer;text-align:center;
-  display:flex;flex-direction:column;align-items:center;gap:7px;
-  transition:border-color .15s,background .15s;
+.fmt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.fmt-opt {
+  background: #1a1a1a; border: 1.5px solid #2a2a2a;
+  border-radius: 12px; padding: 12px 6px; cursor: pointer;
+  text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  transition: border-color .15s, background .15s;
 }
-.fmt-btn.on{border-color:#ff3c00;background:rgba(255,60,0,.08)}
-.fmt-thumb{background:#2a2a2a;border:1.5px solid #3a3a3a;border-radius:3px}
-.fmt-btn.on .fmt-thumb{border-color:#ff3c00}
-.fmt-nm{font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;color:#666}
-.fmt-sz{font-family:'Space Mono';font-size:9px;color:#444}
-.fmt-btn.on .fmt-nm{color:#ff3c00}
+.fmt-opt.on { border-color: #ff3c00; background: rgba(255,60,0,.08); }
+.fmt-thumb { background: #2a2a2a; border: 1.5px solid #383838; border-radius: 3px; }
+.fmt-opt.on .fmt-thumb { border-color: #ff3c00; }
+.fmt-name { font-family: 'Bebas Neue'; font-size: 13px; letter-spacing: 1px; color: #666; }
+.fmt-size { font-family: 'Space Mono'; font-size: 8px; color: #444; }
+.fmt-opt.on .fmt-name { color: #ff3c00; }
 
-/* BUTTONS */
-.btn-go{
-  width:100%;padding:17px;margin-bottom:12px;
-  background:#ff3c00;color:#fff;border:none;border-radius:14px;
-  font-family:'Bebas Neue';font-size:22px;letter-spacing:4px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:opacity .15s,transform .1s;
+/* BIG BUTTONS */
+.btn-go {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 17px; margin-bottom: 10px;
+  background: #ff3c00; color: #fff; border: none; border-radius: 14px;
+  font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 4px;
+  cursor: pointer; transition: opacity .15s, transform .1s;
 }
-.btn-go:active{opacity:.85;transform:scale(.98)}
-.btn-go:disabled{background:#222;color:#444;cursor:not-allowed;transform:none;opacity:1}
+.btn-go:active { opacity: .85; transform: scale(.98); }
+.btn-go:disabled { background: #222; color: #444; cursor: not-allowed; transform: none; opacity: 1; }
+
+.btn-arte {
+  display: none; width: 100%; align-items: center; justify-content: center; gap: 8px;
+  padding: 17px; margin-bottom: 10px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff; border: none; border-radius: 14px;
+  font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 3px;
+  cursor: pointer; transition: opacity .15s, transform .1s;
+}
+.btn-arte.show { display: flex; }
+.btn-arte:active { opacity: .85; transform: scale(.98); }
+.btn-arte:disabled { background: #222; color: #444; cursor: not-allowed; transform: none; opacity: 1; }
 
 /* PROGRESS */
-.prog{display:none;background:#161616;border:1px solid #2a2a2a;border-radius:14px;padding:14px;margin-bottom:12px}
-.prog.show{display:block}
-.prog-track{height:3px;background:#222;border-radius:2px;overflow:hidden;margin-bottom:7px}
-.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff3c00,#ffcc00);transition:width .5s}
-.prog-meta{display:flex;justify-content:space-between;font-family:'Space Mono';font-size:10px;color:#555}
+.prog-wrap { display: none; margin-bottom: 10px; }
+.prog-wrap.show { display: block; }
+.prog-track { height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; margin-bottom: 7px; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, #ff3c00, #ffcc00); width: 0%; transition: width .5s; }
+.prog-info { font-family: 'Space Mono'; font-size: 10px; color: #555; display: flex; justify-content: space-between; }
 
-/* AGENT */
-.agent{
-  background:#161616;border:1px solid #2a2a2a;border-radius:12px;
-  margin-bottom:8px;overflow:hidden;transition:border-color .3s;
+/* AGENTS */
+.agent-card {
+  background: #161616; border: 1px solid #242424;
+  border-radius: 12px; margin-bottom: 8px; overflow: hidden;
+  transition: border-color .25s;
 }
-.agent.running{border-color:#ff3c00}
-.agent.done{border-color:rgba(34,197,94,.4)}
-.agent.error{border-color:rgba(239,68,68,.4)}
-.agent-hd{display:flex;align-items:center;gap:12px;padding:13px;cursor:pointer;user-select:none}
-.agent-ico{
-  width:42px;height:42px;border-radius:11px;flex-shrink:0;
-  background:#1e1e1e;border:1px solid #2a2a2a;
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-  transition:background .2s,border-color .2s;
+.agent-card.running { border-color: #ff3c00; }
+.agent-card.done { border-color: rgba(34,197,94,.4); }
+.agent-card.error { border-color: rgba(239,68,68,.4); }
+
+.agent-hd {
+  display: flex; align-items: center; gap: 12px; padding: 14px;
+  cursor: pointer; user-select: none;
 }
-.agent.running .agent-ico{background:rgba(255,60,0,.1);border-color:#ff3c00}
-.agent.done .agent-ico{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.4)}
-.agent.error .agent-ico{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.4)}
-.agent-info{flex:1;min-width:0}
-.agent-num{font-family:'Space Mono';font-size:9px;color:#444}
-.agent-name{font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;line-height:1.1}
-.agent-role{font-size:11px;color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.agent-tag{font-family:'Space Mono';font-size:9px;padding:4px 8px;border-radius:7px;border:1px solid #2a2a2a;color:#444;flex-shrink:0}
-.agent.running .agent-tag{border-color:#ff3c00;color:#ff3c00}
-.agent.done .agent-tag{border-color:#22c55e;color:#22c55e}
-.agent.error .agent-tag{border-color:#ef4444;color:#ef4444}
-.agent-body{display:none;padding:0 13px 13px;border-top:1px solid #222}
-.agent-body.open{display:block;padding-top:11px}
-.agent-body-txt{font-size:12px;line-height:1.8;color:#aaa;white-space:pre-wrap;word-break:break-word}
-.agent-body-txt strong{color:#ffcc00}
-.agent-body-txt .err-msg{color:#ef4444;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px;margin-top:6px;font-size:11px}
+.agent-ico {
+  width: 42px; height: 42px; flex-shrink: 0;
+  background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; transition: .2s;
+}
+.agent-card.running .agent-ico { background: rgba(255,60,0,.12); border-color: #ff3c00; }
+.agent-card.done    .agent-ico { background: rgba(34,197,94,.1);  border-color: rgba(34,197,94,.4); }
+.agent-card.error   .agent-ico { background: rgba(239,68,68,.1);  border-color: rgba(239,68,68,.4); }
 
-/* DOTS */
-.dots{display:flex;gap:4px;padding:10px 0}
-.dots span{width:5px;height:5px;border-radius:50%;background:#ff3c00;animation:dot 1.2s infinite}
-.dots span:nth-child(2){animation-delay:.2s}
-.dots span:nth-child(3){animation-delay:.4s}
-@keyframes dot{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-5px)}}
+.agent-meta { flex: 1; min-width: 0; }
+.agent-num  { font-family: 'Space Mono'; font-size: 9px; color: #444; }
+.agent-name { font-family: 'Bebas Neue'; font-size: 17px; letter-spacing: 1px; line-height: 1.1; }
+.agent-role { font-size: 11px; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* OUTPUTS */
-.out-box{background:#161616;border:1px solid #2a2a2a;border-radius:12px;margin-bottom:8px;overflow:hidden}
-.out-hd{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-.out-hd:active{background:#1e1e1e}
-.out-title{font-family:'Bebas Neue';font-size:14px;letter-spacing:1px}
-.out-body{display:none;padding:0 14px 13px;font-size:12px;line-height:1.8;color:#aaa;white-space:pre-wrap;word-break:break-word;border-top:1px solid #222}
-.out-body.open{display:block;padding-top:11px}
-.out-body strong{color:#ffcc00}
+.agent-tag {
+  font-family: 'Space Mono'; font-size: 9px;
+  padding: 4px 8px; border-radius: 20px;
+  border: 1px solid #2a2a2a; color: #444; flex-shrink: 0;
+}
+.agent-card.running .agent-tag { border-color: #ff3c00; color: #ff3c00; }
+.agent-card.done    .agent-tag { border-color: #22c55e; color: #22c55e; }
+.agent-card.error   .agent-tag { border-color: #ef4444; color: #ef4444; }
 
-/* PROMPT / LEGENDA */
-.prompt-card{background:#060f0a;border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;margin-bottom:10px;display:none}
-.prompt-card.show{display:block}
-.prompt-lbl{font-family:'Space Mono';font-size:9px;color:#22c55e;letter-spacing:2px;margin-bottom:8px}
-.prompt-txt{font-family:'Space Mono';font-size:11px;color:#5ef0a0;line-height:1.65;word-break:break-all;white-space:pre-wrap}
+.agent-body { display: none; padding: 0 14px 14px; border-top: 1px solid #1e1e1e; }
+.agent-body.open { display: block; padding-top: 12px; }
+.agent-text {
+  font-size: 12px; line-height: 1.8; color: #999;
+  white-space: pre-wrap; word-break: break-word;
+}
+.agent-text strong { color: #ffcc00; }
+.agent-text .err-txt { color: #ff8060; }
 
-.leg-card{background:#161616;border:1px solid rgba(255,204,0,.25);border-radius:12px;padding:14px;margin-bottom:10px;display:none}
-.leg-card.show{display:block}
-.leg-lbl{font-family:'Space Mono';font-size:9px;color:#ffcc00;letter-spacing:2px;margin-bottom:8px}
-.leg-txt{font-size:13px;line-height:1.85;color:#ddd;white-space:pre-wrap;word-break:break-word}
+/* DOTS LOADER */
+.dots { display: flex; gap: 4px; padding: 8px 0; }
+.dots span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #ff3c00; animation: dotbounce 1.2s infinite;
+}
+.dots span:nth-child(2) { animation-delay: .2s; }
+.dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dotbounce { 0%,100%{opacity:.2;transform:translateY(0)} 50%{opacity:1;transform:translateY(-5px)} }
+
+/* OUTPUT BOXES */
+.prompt-box {
+  background: #050e0a; border: 1px solid rgba(34,197,94,.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 8px; display: none;
+}
+.prompt-box.show { display: block; }
+.prompt-box-lbl { font-family: 'Space Mono'; font-size: 9px; color: #22c55e; letter-spacing: 2px; margin-bottom: 8px; }
+.prompt-box-txt {
+  font-family: 'Space Mono'; font-size: 11px; color: #5ef0a0;
+  line-height: 1.6; word-break: break-all; white-space: pre-wrap;
+}
+
+.leg-box {
+  background: #161616; border: 1px solid rgba(255,204,0,.25);
+  border-radius: 12px; padding: 14px; margin-bottom: 8px; display: none;
+}
+.leg-box.show { display: block; }
+.leg-box-lbl { font-family: 'Space Mono'; font-size: 9px; color: #ffcc00; letter-spacing: 2px; margin-bottom: 8px; }
+.leg-box-txt { font-size: 13px; line-height: 1.85; color: #ddd; white-space: pre-wrap; word-break: break-word; }
+
+.collapsible {
+  background: #161616; border: 1px solid #242424;
+  border-radius: 12px; margin-bottom: 8px; overflow: hidden;
+}
+.coll-hd {
+  padding: 13px 14px; display: flex; align-items: center;
+  justify-content: space-between; cursor: pointer;
+}
+.coll-hd:active { background: #1e1e1e; }
+.coll-title { font-family: 'Bebas Neue'; font-size: 14px; letter-spacing: 1px; }
+.coll-body {
+  display: none; padding: 0 14px 14px;
+  font-size: 12px; line-height: 1.8; color: #999;
+  white-space: pre-wrap; word-break: break-word;
+  border-top: 1px solid #1e1e1e;
+}
+.coll-body.open { display: block; padding-top: 12px; }
+.coll-body strong { color: #ffcc00; }
 
 /* COPY BTN */
-.cp{
-  display:inline-flex;align-items:center;gap:5px;margin-top:10px;
-  background:#1e1e1e;border:1px solid #2a2a2a;color:#666;
-  padding:7px 12px;border-radius:8px;font-size:12px;cursor:pointer;
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 10px; background: #1e1e1e;
+  border: 1px solid #2a2a2a; color: #666;
+  padding: 7px 13px; border-radius: 8px;
+  font-size: 12px; cursor: pointer;
 }
-.cp:active{background:#2a2a2a}
-
-/* ARTE FINAL BTN */
-.btn-arte{
-  display:none;width:100%;padding:17px;margin-bottom:12px;
-  background:linear-gradient(135deg,#7c3aed,#a855f7);
-  color:#fff;border:none;border-radius:14px;
-  font-family:'Bebas Neue';font-size:22px;letter-spacing:3px;
-  cursor:pointer;align-items:center;justify-content:center;gap:8px;
-  transition:opacity .15s,transform .1s;
-}
-.btn-arte.show{display:flex}
-.btn-arte:active{opacity:.85;transform:scale(.98)}
-.btn-arte:disabled{background:#222;color:#444;cursor:not-allowed;transform:none}
+.copy-btn:active { background: #2a2a2a; }
 
 /* MODAL */
-.modal{
-  position:fixed;inset:0;z-index:1000;
-  background:rgba(0,0,0,.92);backdrop-filter:blur(10px);
-  display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:14px 14px 60px;
+.modal {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.92); backdrop-filter: blur(10px);
+  display: none; flex-direction: column;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 14px 14px 60px;
 }
-.modal.open{display:block}
-.modal-inner{
-  background:#111;border:1px solid #2a2a2a;border-radius:18px;
-  overflow:hidden;max-width:520px;margin:0 auto;
+.modal.open { display: flex; }
+.modal-box {
+  background: #111; border: 1px solid #2a2a2a; border-radius: 18px;
+  overflow: hidden; width: 100%; max-width: 520px; margin: auto;
 }
-.modal-hd{
-  padding:15px 16px;border-bottom:1px solid #2a2a2a;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;background:#111;z-index:10;
+.modal-hd {
+  padding: 15px 16px; border-bottom: 1px solid #1e1e1e;
+  display: flex; align-items: center; justify-content: space-between;
 }
-.modal-title{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px}
-.modal-title em{color:#a855f7;font-style:normal}
-.modal-x{
-  width:32px;height:32px;border-radius:9px;border:1px solid #2a2a2a;
-  background:transparent;color:#666;font-size:18px;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
+.modal-title { font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 2px; }
+.modal-title em { color: #a855f7; font-style: normal; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 9px;
+  border: 1px solid #2a2a2a; background: transparent;
+  color: #666; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
 }
-.modal-body{padding:16px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.modal-content { padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
 
-.step-log{
-  width:100%;background:#1e1e1e;border-radius:10px;
-  padding:10px 12px;display:flex;flex-direction:column;gap:4px;
-}
-.step-row{display:flex;align-items:center;gap:8px;font-family:'Space Mono';font-size:10px;color:#444}
-.step-row.active{color:#ffcc00}
-.step-row.ok{color:#22c55e}
-.step-row.err{color:#ef4444}
+.steps-list { width: 100%; background: #1a1a1a; border-radius: 10px; padding: 10px 12px; }
+.step-item { font-family: 'Space Mono'; font-size: 10px; color: #444; padding: 3px 0; display: flex; align-items: center; gap: 7px; }
+.step-item.active { color: #ffcc00; }
+.step-item.ok  { color: #22c55e; }
+.step-item.err { color: #ef4444; }
 
-.modal-msg{font-family:'Space Mono';font-size:11px;color:#555;text-align:center;width:100%}
-.modal-msg.ok{color:#22c55e}
-.modal-msg.err{color:#ef4444}
+.card-preview-wrap { width: 100%; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.8); }
+.card-preview-ratio { width: 100%; position: relative; }
+.card-preview-inner { position: absolute; inset: 0; overflow: hidden; }
 
-/* CARD PREVIEW */
-.preview-outer{
-  width:100%;border-radius:12px;overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.8);position:relative;
+.preview-spinner {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.85);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; z-index: 5; border-radius: 12px;
 }
-.preview-ratio{width:100%;position:relative}
-.preview-ratio-inner{position:absolute;inset:0;overflow:hidden}
-.preview-spin{
-  position:absolute;inset:0;background:rgba(0,0,0,.85);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;z-index:5;border-radius:12px;
+.preview-spinner.hidden { display: none; }
+.spin-ring {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid #2a2a2a; border-top-color: #a855f7;
+  animation: spinring .9s linear infinite;
 }
-.preview-spin.gone{display:none}
-.spin-ring{
-  width:40px;height:40px;border-radius:50%;
-  border:3px solid #333;border-top-color:#a855f7;
-  animation:spin .9s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spin-txt{font-family:'Space Mono';font-size:10px;color:#a855f7;letter-spacing:1px;text-align:center}
+@keyframes spinring { to { transform: rotate(360deg); } }
+.spin-txt { font-family: 'Space Mono'; font-size: 10px; color: #a855f7; letter-spacing: 1px; text-align: center; }
 
-.btn-dl{
-  width:100%;padding:16px;
-  background:linear-gradient(135deg,#6d28d9,#a855f7);
-  color:#fff;border:none;border-radius:14px;
-  font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:opacity .15s;
+.modal-status { font-family: 'Space Mono'; font-size: 11px; color: #555; text-align: center; width: 100%; }
+.modal-status.ok  { color: #22c55e; }
+.modal-status.err { color: #ef4444; }
+
+.btn-download {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #6d28d9, #a855f7);
+  color: #fff; border: none; border-radius: 14px;
+  font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 3px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .15s;
 }
-.btn-dl:active{opacity:.85}
-.btn-dl:disabled{background:#222;color:#444;cursor:not-allowed}
+.btn-download:active { opacity: .85; }
+.btn-download:disabled { background: #222; color: #444; cursor: not-allowed; opacity: 1; }
+
+/* HIDDEN RENDER */
+#RENDER_TARGET {
+  position: fixed; left: -19999px; top: 0;
+  z-index: -1; overflow: hidden; pointer-events: none;
+}
 
 /* TOAST */
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:#1e1e1e;border:1px solid #3a3a3a;
-  color:#f0f0f0;padding:11px 20px;border-radius:20px;
-  font-size:13px;z-index:9999;white-space:nowrap;
-  animation:tin .2s ease;pointer-events:none;
+.toast {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  background: #1e1e1e; color: #f0f0f0;
+  padding: 11px 20px; border-radius: 20px;
+  font-size: 13px; z-index: 9999;
+  border: 1px solid #333; pointer-events: none;
+  white-space: nowrap; max-width: 90vw;
+  animation: toastanim .2s ease;
 }
-@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
-
-/* HIDDEN RENDER DIV */
-#RT{
-  position:fixed;left:-29999px;top:0;
-  width:1080px;height:1080px;overflow:hidden;
-  z-index:-1;pointer-events:none;
-}
+@keyframes toastanim { from { opacity:0; transform: translate(-50%,8px); } to { opacity:1; transform:translateX(-50%); } }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="hdr">
-  <div class="logo">SQU<span>AD</span></div>
-  <div class="live-badge">GEMINI 2.0 FLASH</div>
+  <div class="logo">SQU<b>AD</b></div>
+  <div class="badge-live" id="modelBadge">GEMINI AUTO</div>
 </div>
 
 <div class="page">
 
   <!-- API KEY -->
   <div class="box">
-    <div class="box-lbl">// Gemini API Key</div>
-
-    <!-- Shows when key is saved -->
-    <div class="key-saved hidden" id="keySaved">
-      <span class="ic">🔑</span>
-      <span id="keyDisplay">Key configurada</span>
-      <button class="btn-key-reset" onclick="resetKey()" style="margin-left:auto;margin-top:0">Trocar</button>
+    <div class="box-title">// Gemini API Key</div>
+    <div class="key-status no-key" id="keyStatus">
+      <span id="keyStatusIcon">○</span>
+      <span id="keyStatusMsg">Nenhuma key configurada</span>
     </div>
-
-    <!-- Shows when no key -->
-    <div id="keyForm">
-      <div class="key-form">
-        <input class="key-inp" id="keyInp" type="password" placeholder="Cole sua chave (AIza...)"/>
-        <button class="btn-key" onclick="salvarKey()">Salvar</button>
-      </div>
-      <div class="key-hint">
-        Obtenha grátis em <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
-      </div>
+    <div class="key-row">
+      <input class="key-inp" id="keyInput" type="password" placeholder="Cole aqui sua key do Google AI Studio (AIza...)"/>
+      <button class="key-btn" onclick="SQUAD.saveKey()">Salvar</button>
+      <button class="key-clear" id="keyClear" onclick="SQUAD.clearKey()" style="display:none">✕</button>
+    </div>
+    <div class="key-hint">
+      Grátis em <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a><br>
+      <span style="color:#22c55e">✓ Key salva no navegador — não precisa informar toda vez.</span>
     </div>
   </div>
 
   <!-- BRIEF -->
   <div class="box">
-    <div class="box-lbl">// Brief Criativo</div>
-
-    <div class="field">
-      <label class="lbl">Marca / Cliente</label>
+    <div class="box-title">// Brief Criativo</div>
+    <div class="f">
+      <label>Marca / Cliente</label>
       <input class="inp" id="fBrand" type="text" placeholder="Ex: Studio Fit, Café Noir..."/>
     </div>
-
-    <div class="field">
-      <label class="lbl">Nicho</label>
+    <div class="f">
+      <label>Nicho</label>
       <div class="sel-w">
         <select class="sel" id="fNiche">
-          <option value="">Selecione o nicho...</option>
+          <option value="">Selecione...</option>
           <option>Moda e Lifestyle</option>
           <option>Food e Gastronomia</option>
           <option>Saude e Fitness</option>
@@ -373,12 +403,11 @@ body{
         </select>
       </div>
     </div>
-
-    <div class="field">
-      <label class="lbl">Objetivo</label>
+    <div class="f">
+      <label>Objetivo</label>
       <div class="sel-w">
         <select class="sel" id="fObj">
-          <option value="">Selecione o objetivo...</option>
+          <option value="">Selecione...</option>
           <option>Engajamento maximo</option>
           <option>Conversao e Vendas</option>
           <option>Awareness e Branding</option>
@@ -388,17 +417,15 @@ body{
         </select>
       </div>
     </div>
-
-    <div class="field">
-      <label class="lbl">Produto / Serviço / Tema</label>
-      <textarea class="ta" id="fDesc" placeholder="Descreva: o que é, para quem, oferta, diferencial, preço..."></textarea>
+    <div class="f">
+      <label>Produto / Serviço / Tema *</label>
+      <textarea class="ta" id="fDesc" placeholder="Descreva o que será comunicado: produto, serviço, oferta, diferencial, público..."></textarea>
     </div>
-
-    <div class="field">
-      <label class="lbl">Tom Visual</label>
+    <div class="f">
+      <label>Tom Visual</label>
       <div class="sel-w">
         <select class="sel" id="fTone">
-          <option value="">Selecione o tom...</option>
+          <option value="">Selecione...</option>
           <option>Premium e Luxo</option>
           <option>Moderno e Bold</option>
           <option>Inspirador e Emocional</option>
@@ -409,630 +436,746 @@ body{
         </select>
       </div>
     </div>
-
-    <div class="field">
-      <label class="lbl">Público-Alvo (opcional)</label>
+    <div class="f">
+      <label>Público-Alvo (opcional)</label>
       <input class="inp" id="fAud" type="text" placeholder="Ex: Mulheres 28-42, classe B..."/>
     </div>
   </div>
 
   <!-- FORMAT -->
   <div class="box">
-    <div class="box-lbl">// Formato do Card</div>
-    <div class="fmt-row">
-      <div class="fmt-btn on" id="fmt0" onclick="setFmt(0,1080,1080,'Feed 1:1')">
-        <div class="fmt-thumb" style="width:32px;height:32px"></div>
-        <div class="fmt-nm">FEED</div>
-        <div class="fmt-sz">1080×1080</div>
+    <div class="box-title">// Formato do Card</div>
+    <div class="fmt-grid">
+      <div class="fmt-opt on" id="fmt0" onclick="SQUAD.selFmt(0,1080,1080,'Feed 1:1')">
+        <div class="fmt-thumb" style="width:34px;height:34px"></div>
+        <div class="fmt-name">FEED</div>
+        <div class="fmt-size">1080×1080</div>
       </div>
-      <div class="fmt-btn" id="fmt1" onclick="setFmt(1,1080,1350,'Portrait 4:5')">
-        <div class="fmt-thumb" style="width:24px;height:32px"></div>
-        <div class="fmt-nm">PORTRAIT</div>
-        <div class="fmt-sz">1080×1350</div>
+      <div class="fmt-opt" id="fmt1" onclick="SQUAD.selFmt(1,1080,1350,'Portrait 4:5')">
+        <div class="fmt-thumb" style="width:26px;height:34px"></div>
+        <div class="fmt-name">PORTRAIT</div>
+        <div class="fmt-size">1080×1350</div>
       </div>
-      <div class="fmt-btn" id="fmt2" onclick="setFmt(2,1080,1920,'Stories 9:16')">
-        <div class="fmt-thumb" style="width:16px;height:32px"></div>
-        <div class="fmt-nm">STORIES</div>
-        <div class="fmt-sz">1080×1920</div>
+      <div class="fmt-opt" id="fmt2" onclick="SQUAD.selFmt(2,1080,1920,'Stories 9:16')">
+        <div class="fmt-thumb" style="width:18px;height:34px"></div>
+        <div class="fmt-name">STORIES</div>
+        <div class="fmt-size">1080×1920</div>
       </div>
     </div>
   </div>
 
   <!-- LAUNCH -->
-  <button class="btn-go" id="btnGo" onclick="iniciar()">▶ ACIONAR SQUAD</button>
+  <button class="btn-go" id="btnGo" onclick="SQUAD.launch()">▶ ACIONAR SQUAD</button>
 
   <!-- PROGRESS -->
-  <div class="prog" id="progBox">
+  <div class="prog-wrap" id="progWrap">
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
-    <div class="prog-meta"><span id="progLbl">Iniciando...</span><span id="progPct">0%</span></div>
+    <div class="prog-info">
+      <span id="progLabel">Iniciando...</span>
+      <span id="progPct">0%</span>
+    </div>
   </div>
 
   <!-- AGENTS -->
-  <div id="agents"></div>
+  <div id="agentList"></div>
 
-  <!-- PROMPT -->
-  <div class="prompt-card" id="promptCard">
-    <div class="prompt-lbl">PROMPT GERADO — MIDJOURNEY / POLLINATIONS AI</div>
-    <div class="prompt-txt" id="promptTxt"></div>
-    <button class="cp" onclick="copiar('promptTxt',this)">⎘ Copiar prompt</button>
+  <!-- PROMPT OUTPUT -->
+  <div class="prompt-box" id="promptBox">
+    <div class="prompt-box-lbl">PROMPT — MIDJOURNEY / POLLINATIONS AI</div>
+    <div class="prompt-box-txt" id="promptTxt"></div>
+    <button class="copy-btn" onclick="SQUAD.copyEl('promptTxt',this)">⎘ Copiar prompt</button>
   </div>
 
-  <!-- LEGENDA -->
-  <div class="leg-card" id="legCard">
-    <div class="leg-lbl">LEGENDA INSTAGRAM</div>
-    <div class="leg-txt" id="legTxt"></div>
-    <button class="cp" onclick="copiar('legTxt',this)">⎘ Copiar legenda</button>
+  <!-- LEGENDA OUTPUT -->
+  <div class="leg-box" id="legendaBox">
+    <div class="leg-box-lbl">LEGENDA INSTAGRAM</div>
+    <div class="leg-box-txt" id="legendaTxt"></div>
+    <button class="copy-btn" onclick="SQUAD.copyEl('legendaTxt',this)">⎘ Copiar legenda</button>
   </div>
 
-  <!-- EXTRA OUTPUTS -->
-  <div id="extraOut"></div>
+  <!-- EXTRA COLLAPSIBLE OUTPUTS -->
+  <div id="extraOutputs"></div>
 
   <!-- ARTE FINAL -->
-  <button class="btn-arte" id="btnArte" onclick="abrirModal()">🎨 GERAR ARTE FINAL</button>
+  <button class="btn-arte" id="btnArte" onclick="SQUAD.openModal()">🎨 GERAR ARTE FINAL</button>
 
 </div>
 
 <!-- MODAL -->
 <div class="modal" id="modal">
-  <div class="modal-inner">
+  <div class="modal-box">
     <div class="modal-hd">
       <div class="modal-title">ARTE <em>FINAL</em></div>
-      <button class="modal-x" onclick="fecharModal()">✕</button>
+      <button class="modal-close" onclick="SQUAD.closeModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="step-log" id="stepLog"></div>
-      <div class="modal-msg" id="modalMsg">Iniciando geração...</div>
-      <div class="preview-outer" id="prevOuter">
-        <div class="preview-spin" id="prevSpin">
+    <div class="modal-content">
+      <div class="steps-list" id="stepsList"></div>
+      <div class="modal-status" id="modalStatus">Aguardando...</div>
+      <div class="card-preview-wrap" id="previewWrap">
+        <div class="preview-spinner" id="previewSpinner">
           <div class="spin-ring"></div>
           <div class="spin-txt" id="spinTxt">GERANDO IMAGEM...</div>
         </div>
-        <div class="preview-ratio" id="prevRatio">
-          <div class="preview-ratio-inner" id="prevInner"></div>
+        <div class="card-preview-ratio" id="previewRatio">
+          <div class="card-preview-inner" id="previewInner"></div>
         </div>
       </div>
-      <button class="btn-dl" id="btnDl" onclick="baixar()" disabled>⬇ BAIXAR PNG</button>
+      <button class="btn-download" id="btnDownload" onclick="SQUAD.download()" disabled>⬇ BAIXAR PNG</button>
     </div>
   </div>
 </div>
 
-<!-- FULL-RES RENDER TARGET -->
-<div id="RT"></div>
+<!-- HIDDEN FULL-RES RENDER TARGET -->
+<div id="RENDER_TARGET"></div>
 
 <script>
-// ════════════════════════════════════════════════
-// ALL CODE IN GLOBAL SCOPE — NO IIFE
-// Variables accessible everywhere
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// SQUAD — All functions on global SQUAD object
+// No IIFE wrapper — prevents scope issues with onclick
+// ═══════════════════════════════════════════════════
+var SQUAD = {};
 
-var GEMINI_KEY = '';
-var BRIEF = {};
-var OUTS = [];
-var FMT = { w:1080, h:1080, label:'Feed 1:1' };
-var RUNNING = false;
-var MJ_PROMPT = '';
-var MODAL_STEPS = [];
+// ── STATE ──────────────────────────────────────────
+var _key    = '';
+var _brief  = {};
+var _outs   = [];
+var _fmt    = { w:1080, h:1080, label:'Feed 1:1' };
+var _busy   = false;
+var _mj     = '';
+var _artSteps = [];
 
-// ── INIT: load key from localStorage ─────────────
-(function init() {
-  var saved = '';
-  try { saved = localStorage.getItem('squad_gemini_key') || ''; } catch(e) {}
-  if (saved) {
-    GEMINI_KEY = saved;
-    showKeySaved(saved);
-  }
-})();
+var LS_KEY = 'squad_gkey_v1';
 
-function showKeySaved(key) {
-  document.getElementById('keySaved').classList.remove('hidden');
-  document.getElementById('keyForm').style.display = 'none';
-  document.getElementById('keyDisplay').textContent = 'Key ativa: ' + key.substring(0,12) + '...';
-}
+// ── localStorage PERSISTENCE ───────────────────────
+SQUAD.loadKey = function() {
+  try {
+    var k = localStorage.getItem(LS_KEY) || '';
+    if (k && k.length > 10) {
+      _key = k;
+      _updateKeyUI(true);
+    }
+  } catch(e) {}
+};
 
-function showKeyForm() {
-  document.getElementById('keySaved').classList.add('hidden');
-  document.getElementById('keyForm').style.display = 'block';
-}
-
-// ── KEY FUNCTIONS ─────────────────────────────────
-function salvarKey() {
-  var inp = document.getElementById('keyInp');
-  var val = inp.value.trim();
-
-  if (!val) {
-    inp.classList.add('error');
-    setTimeout(function(){ inp.classList.remove('error'); }, 1000);
-    toast('⚠️ Cole a API Key!');
+SQUAD.saveKey = function() {
+  var inp = document.getElementById('keyInput');
+  var v = (inp.value || '').trim();
+  if (!v) { SQUAD.toast('⚠ Cole a API Key primeiro!'); inp.focus(); return; }
+  if (!v.startsWith('AIza')) {
+    inp.style.borderColor = '#ef4444';
+    setTimeout(function(){ inp.style.borderColor = ''; }, 2000);
+    SQUAD.toast('⚠ Key inválida — deve começar com AIza');
     return;
   }
-
-  // Accept any non-empty key (don't validate prefix — some keys differ)
-  GEMINI_KEY = val;
-
-  try { localStorage.setItem('squad_gemini_key', val); } catch(e) {}
-
+  _key = v;
+  try { localStorage.setItem(LS_KEY, v); } catch(e) {}
   inp.value = '';
-  showKeySaved(val);
-  toast('✓ Key salva e persistida!');
+  _updateKeyUI(true);
+  SQUAD.toast('✓ Key salva no navegador!');
+};
+
+SQUAD.clearKey = function() {
+  _key = '';
+  try { localStorage.removeItem(LS_KEY); } catch(e) {}
+  _updateKeyUI(false);
+  SQUAD.toast('Key removida');
+};
+
+function _updateKeyUI(has) {
+  var st = document.getElementById('keyStatus');
+  var icon = document.getElementById('keyStatusIcon');
+  var msg  = document.getElementById('keyStatusMsg');
+  var clrBtn = document.getElementById('keyClear');
+  if (has) {
+    st.className = 'key-status has-key';
+    icon.textContent = '✓';
+    msg.textContent = 'Key ativa: ' + _key.substring(0,12) + '...';
+    clrBtn.style.display = 'block';
+  } else {
+    st.className = 'key-status no-key';
+    icon.textContent = '○';
+    msg.textContent = 'Nenhuma key configurada';
+    clrBtn.style.display = 'none';
+  }
 }
 
-function resetKey() {
-  GEMINI_KEY = '';
-  try { localStorage.removeItem('squad_gemini_key'); } catch(e) {}
-  showKeyForm();
-  toast('Key removida.');
-}
+// ── FORMAT ─────────────────────────────────────────
+SQUAD.selFmt = function(idx, w, h, label) {
+  [0,1,2].forEach(function(i){ document.getElementById('fmt'+i).classList.remove('on'); });
+  document.getElementById('fmt'+idx).classList.add('on');
+  _fmt = { w:w, h:h, label:label };
+};
 
-// ── FORMAT ────────────────────────────────────────
-function setFmt(i, w, h, label) {
-  [0,1,2].forEach(function(x){ document.getElementById('fmt'+x).classList.remove('on'); });
-  document.getElementById('fmt'+i).classList.add('on');
-  FMT = { w:w, h:h, label:label };
-}
-
-// ── AGENTS ────────────────────────────────────────
-var AGENTS = [
+// ── AGENTS DEFINITION ──────────────────────────────
+var _agents = [
   {
-    ico:'🧠', name:'ESTRATEGISTA',
-    role:'Insight, conceito e arquitetura do post',
-    getPrompt: function() {
-      return 'Você é Estrategista de Conteúdo Sênior especializado em Instagram e marketing digital.\n'
-        + 'Responda em português. Use **negrito** nos títulos.\n\n'
-        + 'BRIEF:\nMarca: ' + BRIEF.brand + '\nNicho: ' + BRIEF.niche
-        + '\nObjetivo: ' + BRIEF.obj + '\nProduto/Tema: ' + BRIEF.desc
-        + '\nTom: ' + BRIEF.tone + '\nFormato: ' + FMT.label + ' (' + FMT.w + 'x' + FMT.h + 'px)\n\n'
-        + '**DIAGNÓSTICO DO PÚBLICO**\nQuem é, qual dor, o que deseja, como age no Instagram.\n\n'
-        + '**INSIGHT ESTRATÉGICO**\nA descoberta não-óbvia que fundamenta este post.\n\n'
-        + '**ÂNGULO CRIATIVO**\nPor que este ângulo vai funcionar.\n\n'
-        + '**GANCHO CENTRAL**\nA frase que para o scroll.\n\n'
-        + '**ELEMENTOS DO CARD**\nBadge, título principal, subtítulo, CTA.\n\n'
-        + '**KPIs DE SUCESSO**\nMétricas que indicam sucesso.';
+    ico:'🧠', name:'ESTRATEGISTA', role:'Insight, conceito e arquitetura do post',
+    prompt: function() {
+      return 'Você é Estrategista de Conteúdo Sênior especializado em Instagram.\n'
+        + 'Responda em português brasileiro. Use **negrito** nos títulos.\n\n'
+        + 'BRIEF DO CLIENTE:\n'
+        + 'Marca: ' + _brief.brand + '\n'
+        + 'Nicho: ' + _brief.niche + '\n'
+        + 'Objetivo: ' + _brief.obj + '\n'
+        + 'Produto/Tema: ' + _brief.desc + '\n'
+        + 'Tom: ' + _brief.tone + '\n'
+        + 'Público: ' + (_brief.aud || 'Deduzir pelo nicho') + '\n'
+        + 'Formato: ' + _fmt.label + ' (' + _fmt.w + '×' + _fmt.h + 'px)\n\n'
+        + '**DIAGNÓSTICO DO PÚBLICO**\n'
+        + 'Quem é, qual dor, o que deseja, como se comporta no Instagram.\n\n'
+        + '**INSIGHT ESTRATÉGICO**\n'
+        + 'A descoberta não-óbvia que fundamenta este post.\n\n'
+        + '**ÂNGULO CRIATIVO**\n'
+        + 'Por que este ângulo vai funcionar para este objetivo.\n\n'
+        + '**GANCHO CENTRAL**\n'
+        + 'Uma frase que para o scroll.\n\n'
+        + '**ELEMENTOS DO CARD**\n'
+        + 'Badge, headline, subtítulo, CTA, elemento visual de destaque.\n\n'
+        + '**KPIs DE SUCESSO**\n'
+        + 'Métricas que indicam que o post performou.';
     }
   },
   {
-    ico:'✍️', name:'COPYWRITER',
-    role:'Textos definitivos que entram no card visual',
-    getPrompt: function() {
+    ico:'✍️', name:'COPYWRITER', role:'Textos definitivos que entram no card visual',
+    prompt: function() {
       return 'Você é Copywriter Sênior de resposta direta para Instagram.\n'
-        + 'O texto do card tem 0,3-2 segundos para funcionar. Cada palavra conta.\n'
-        + 'Responda em português.\n\n'
-        + 'ESTRATÉGIA:\n' + (OUTS[0]||'sem dados').substring(0,500) + '\n\n'
-        + 'Marca: ' + BRIEF.brand + ' | Tom: ' + BRIEF.tone + '\n\n'
-        + 'ENTREGUE NESTE FORMATO EXATO:\n\n'
-        + '**BADGE**\n[2-3 palavras MAIÚSCULO ou vazio]\n\n'
-        + '**EYEBROW**\n[linha acima do headline, máx 5 palavras]\n\n'
-        + '**HEADLINE**\n[MAIÚSCULO, máx 5 palavras]\n\n'
-        + '**SUBTEXT**\n[complemento, máx 12 palavras]\n\n'
-        + '**CTA**\n[chamada à ação, máx 4 palavras]\n\n'
-        + '**JUSTIFICATIVA**\n[por que estas escolhas funcionam]';
+        + 'No Instagram o texto do card tem 0,3 a 2 segundos para funcionar.\n'
+        + 'Responda em português brasileiro.\n\n'
+        + 'ESTRATÉGIA DO AGENTE ANTERIOR:\n'
+        + (_outs[0] || 'N/A').substring(0, 500) + '\n\n'
+        + 'Marca: ' + _brief.brand + ' | Tom: ' + _brief.tone + '\n\n'
+        + 'RETORNE EXATAMENTE NESTE FORMATO:\n\n'
+        + '**BADGE**\n'
+        + '[2-3 palavras MAIÚSCULO. Ex: NOVO, EXCLUSIVO. Deixe vazio se não fizer sentido]\n\n'
+        + '**EYEBROW**\n'
+        + '[linha acima do headline, máx 5 palavras]\n\n'
+        + '**HEADLINE**\n'
+        + '[MAIÚSCULO, máx 5 palavras, irresistível]\n\n'
+        + '**SUBTEXT**\n'
+        + '[complemento, máx 12 palavras]\n\n'
+        + '**CTA**\n'
+        + '[chamada à ação, máx 4 palavras]\n\n'
+        + '**JUSTIFICATIVA**\n'
+        + '[Por que estas escolhas funcionam]';
     }
   },
   {
-    ico:'📸', name:'DIR. FOTOGRAFIA',
-    role:'Prompt para geração de imagem por IA',
-    getPrompt: function() {
+    ico:'📸', name:'DIR. FOTOGRAFIA', role:'Prompt de imagem para Pollinations / Midjourney',
+    prompt: function() {
       return 'Você é Diretor de Fotografia especializado em prompts para IA generativa.\n'
-        + 'Imagem de fundo: impacto visual, área inferior limpa para texto.\n'
-        + 'Responda em português. O PROMPT DE IMAGEM em inglês.\n\n'
-        + 'Nicho: ' + BRIEF.niche + ' | Tom: ' + BRIEF.tone
-        + ' | Formato: ' + FMT.w + 'x' + FMT.h + '\n'
-        + 'Copy: ' + (OUTS[1]||'sem dados').substring(0,200) + '\n\n'
-        + '**CONCEITO DA IMAGEM**\nO que vai mostrar e por que é poderoso.\n\n'
-        + '**ESTILO**\nFotografia real, CGI, abstrato?\n\n'
+        + 'A imagem de fundo do card precisa: impacto visual + área inferior mais limpa para texto.\n'
+        + 'Responda em português. O PROMPT DE IMAGEM deve ser em inglês.\n\n'
+        + 'Nicho: ' + _brief.niche + ' | Tom: ' + _brief.tone + '\n'
+        + 'Formato: ' + _fmt.w + '×' + _fmt.h + 'px\n'
+        + 'Copy do card: ' + (_outs[1] || 'N/A').substring(0, 200) + '\n\n'
+        + '**CONCEITO DA IMAGEM**\n'
+        + 'O que vai mostrar e por que é poderoso para este post.\n\n'
+        + '**ESTILO FOTOGRÁFICO**\n'
+        + 'Fotografia real, CGI, abstrato? Qual referência.\n\n'
         + '**PROMPT DE IMAGEM**\n'
-        + '[Prompt em inglês: sujeito, ambiente, iluminação, mood. '
-        + 'Finalizar com: 8k, cinematic, professional photography, no text, no watermark]\n\n'
-        + '**CORES**\nPaleta e tratamento.';
+        + '[Prompt completo EM INGLÊS: sujeito, ambiente, iluminação, mood, estilo, qualidade. '
+        + 'Área inferior da imagem deve ter menos elementos. '
+        + 'Finalizar com: professional photography, 8k resolution, cinematic lighting, no text, no watermark]\n\n'
+        + '**TRATAMENTO DE COR**\n'
+        + 'Paleta e grading de como conversa com o design.';
     }
   },
   {
-    ico:'🎨', name:'DIR. DE ARTE',
-    role:'Paleta HEX, fontes e sistema visual',
-    getPrompt: function() {
-      return 'Você é Diretor de Arte Sênior para Instagram. Retorna CARD_JSON com HEX exatos.\nResponda em português.\n\n'
-        + 'Nicho: ' + BRIEF.niche + ' | Tom: ' + BRIEF.tone
-        + ' | Formato: ' + FMT.w + 'x' + FMT.h + '\n'
-        + 'Copy: ' + (OUTS[1]||'sem dados').substring(0,300) + '\n\n'
-        + '**CONCEITO VISUAL**\n**PALETA** (HEX obrigatório)\n**TIPOGRAFIA** (Google Fonts)\n\n'
-        + 'RETORNE O JSON ABAIXO (substitua todos os valores com HEX reais):\n'
+    ico:'🎨', name:'DIR. DE ARTE', role:'Paleta HEX, fontes, composição e JSON do card',
+    prompt: function() {
+      return 'Você é Diretor de Arte Sênior para Instagram de marcas globais.\n'
+        + 'Retorne um CARD_JSON com cores HEX exatas para renderização CSS.\n'
+        + 'Responda em português.\n\n'
+        + 'Nicho: ' + _brief.niche + ' | Tom: ' + _brief.tone + '\n'
+        + 'Formato: ' + _fmt.w + '×' + _fmt.h + 'px\n'
+        + 'Copy: ' + (_outs[1] || 'N/A').substring(0, 300) + '\n\n'
+        + '**CONCEITO VISUAL**\n'
+        + 'Escola de design e o que o layout comunica.\n\n'
+        + '**PALETA DE CORES** (HEX obrigatório para cada cor)\n'
+        + 'Justifique cada escolha.\n\n'
+        + '**TIPOGRAFIA**\n'
+        + 'Fontes Google Fonts específicas com peso.\n\n'
+        + 'RETORNE ESTE JSON NO FINAL (preencha com HEX reais — sem placeholders):\n'
         + 'CARD_JSON_START\n'
         + '{"bg1":"#0a0a0a","bg2":"#1a1a2e","overlay":"rgba(0,0,0,0.65)",'
-        + '"hlColor":"#FFFFFF","hlFont":"Bebas Neue","hlSize":' + (FMT.h>1500?110:FMT.h>1100?88:72) + ','
-        + '"eyColor":"#FFCC00","stColor":"rgba(255,255,255,0.8)",'
+        + '"hlColor":"#FFFFFF","hlFont":"Bebas Neue","hlSize":' + (_fmt.h > 1500 ? 110 : _fmt.h > 1100 ? 88 : 72) + ','
+        + '"eyColor":"#FFCC00","eyFont":"Space Mono",'
+        + '"stColor":"rgba(255,255,255,0.80)","stFont":"Inter",'
         + '"badgeBg":"#FF3C00","badgeFg":"#FFFFFF","ctaColor":"#FFFFFF",'
         + '"acc1":"#FF3C00","acc2":"#FFCC00","decor":"rgba(255,255,255,0.04)"}\n'
         + 'CARD_JSON_END';
     }
   },
   {
-    ico:'💬', name:'COPY LEGENDA',
-    role:'Legenda poderosa + hashtags estratégicas',
-    getPrompt: function() {
-      return 'Você é especialista em Copy para Instagram. Legenda que gera engajamento real.\nResponda em português.\n\n'
-        + 'Marca: ' + BRIEF.brand + ' | Objetivo: ' + BRIEF.obj + ' | Tom: ' + BRIEF.tone + '\n'
-        + 'Card: ' + (OUTS[1]||'sem dados').substring(0,200) + '\n\n'
-        + '**HOOK** (antes do "ver mais" — máx 125 chars)\n[Provocador ou promessa forte]\n\n'
-        + '**CORPO**\n[4-5 parágrafos com emojis. Storytelling ou benefícios.]\n\n'
-        + '**CTA PRINCIPAL**\n**CTA SECUNDÁRIO**\n\n'
-        + '**HASHTAGS**\n[25: 5 mega + 8 grandes + 8 médias + 4 nicho]\n\n'
-        + '**MELHOR HORÁRIO**\n[Dia + hora + justificativa]';
+    ico:'💬', name:'COPY LEGENDA', role:'Legenda poderosa + hashtags estratégicas',
+    prompt: function() {
+      return 'Você é especialista em Copy de legenda para Instagram que gera engajamento real.\n'
+        + 'A legenda aprofunda o card — não repete o que está nele.\n'
+        + 'Responda em português brasileiro.\n\n'
+        + 'Marca: ' + _brief.brand + ' | Objetivo: ' + _brief.obj + ' | Tom: ' + _brief.tone + '\n'
+        + 'O que está no card (não repita): ' + (_outs[1] || 'N/A').substring(0, 200) + '\n\n'
+        + '**HOOK** (primeira linha antes do "ver mais" — máx 125 chars — CRÍTICO)\n'
+        + '[Provocador, curioso ou promessa forte]\n\n'
+        + '**CORPO**\n'
+        + '[4-5 parágrafos curtos com emojis. Storytelling, benefícios ou autoridade.]\n\n'
+        + '**CTA PRINCIPAL**\n'
+        + '[Ação específica]\n\n'
+        + '**CTA SECUNDÁRIO**\n'
+        + '[Salvar, marcar alguém, compartilhar]\n\n'
+        + '**HASHTAGS**\n'
+        + '[25 hashtags: 5 mega + 8 grandes + 8 médias + 4 nicho]\n\n'
+        + '**MELHOR HORÁRIO**\n'
+        + '[Dia + hora + justificativa]';
     }
   },
   {
-    ico:'📊', name:'TRÁFEGO PAGO',
-    role:'Meta Ads: segmentação e estratégia de mídia',
-    getPrompt: function() {
-      return 'Você é Especialista em Meta Ads com 10 anos de experiência.\nResponda em português.\n\n'
-        + 'Objetivo: ' + BRIEF.obj + ' | Nicho: ' + BRIEF.niche + ' | Formato: ' + FMT.label + '\n\n'
-        + '**COPY PARA ANÚNCIO**\nTexto (máx 125): | Headline (máx 40): | Descrição (máx 30):\n\n'
-        + '**OBJETIVO META ADS**\n**SEGMENTAÇÃO**\n**ESTRUTURA**\n**TESTE A/B**\n\n'
-        + '**MÉTRICAS ESPERADAS**\nCTR: | CPM: | CPC: | ROAS mínimo:';
+    ico:'📊', name:'TRÁFEGO PAGO', role:'Meta Ads: copy, segmentação e estratégia',
+    prompt: function() {
+      return 'Você é Especialista em Meta Ads com 10 anos de experiência gerindo campanhas.\n'
+        + 'Responda em português brasileiro.\n\n'
+        + 'Objetivo: ' + _brief.obj + ' | Nicho: ' + _brief.niche + ' | Formato: ' + _fmt.label + '\n'
+        + 'Copy do card: ' + (_outs[1] || 'N/A').substring(0, 200) + '\n\n'
+        + '**COPY PARA ANÚNCIO**\n'
+        + 'Texto principal (máx 125 chars): |\n'
+        + 'Headline (máx 40 chars): |\n'
+        + 'Descrição (máx 30 chars):\n\n'
+        + '**OBJETIVO META ADS**\n'
+        + '[Qual usar e por quê]\n\n'
+        + '**SEGMENTAÇÃO PRIMÁRIA**\n'
+        + 'Interesses + comportamentos + demografia\n\n'
+        + '**ESTRUTURA DE CAMPANHA**\n'
+        + 'Orçamento diário sugerido + duração do teste\n\n'
+        + '**TESTE A/B**\n'
+        + 'Variação A: | Variação B: | Critério de vencedor:\n\n'
+        + '**MÉTRICAS ESPERADAS**\n'
+        + 'CTR: | CPM: | CPC: | ROAS mínimo:';
     }
   },
   {
-    ico:'🏆', name:'DIR. CRIATIVO',
-    role:'Revisão final e checklist de publicação',
-    getPrompt: function() {
-      return 'Você é Diretor Criativo Executivo. Revisão cirúrgica e honesta.\nResponda em português.\n\n'
-        + 'Marca: ' + BRIEF.brand + ' | Objetivo: ' + BRIEF.obj + '\n'
-        + 'Copy: ' + (OUTS[1]||'').substring(0,150) + '\n'
-        + 'Legenda: ' + (OUTS[4]||'').substring(0,150) + '\n\n'
-        + '**AVALIAÇÃO** (0-10)\nEstratégia: | Copy: | Arte: | Foto: | Legenda: | Tráfego:\n\n'
-        + '**PONTOS FORTES**\n**AJUSTES CRÍTICOS** (máx 3)\n\n'
-        + '**CHECKLIST**\n- [ ] Ortografia\n- [ ] Links\n- [ ] Resolução\n- [ ] CTA\n'
-        + '- [ ] Hashtags\n- [ ] Horário\n- [ ] Pixel e UTMs\n\n'
-        + '**SCORE FINAL**\nNota: /10 | Probabilidade acima da média: %\nVeredicto:';
+    ico:'🏆', name:'DIR. CRIATIVO', role:'Revisão final e checklist de publicação',
+    prompt: function() {
+      return 'Você é o Diretor Criativo Executivo da agência — o olhar mais exigente.\n'
+        + 'Sua revisão é cirúrgica, honesta e construtiva. Nunca valida por validar.\n'
+        + 'Responda em português brasileiro.\n\n'
+        + 'Marca: ' + _brief.brand + ' | Objetivo: ' + _brief.obj + '\n'
+        + 'Copy do card: ' + (_outs[1] || 'N/A').substring(0, 150) + '\n'
+        + 'Legenda: ' + (_outs[4] || 'N/A').substring(0, 150) + '\n\n'
+        + '**AVALIAÇÃO** (nota 0-10 com diagnóstico)\n'
+        + 'Estratégia: /10 | Copy: /10 | Arte: /10 | Foto: /10 | Legenda: /10 | Tráfego: /10\n\n'
+        + '**COERÊNCIA**\n'
+        + 'Card e legenda se complementam? Tom consistente?\n\n'
+        + '**PONTOS FORTES**\n\n'
+        + '**AJUSTES CRÍTICOS** (máx 3)\n\n'
+        + '**CHECKLIST DE PUBLICAÇÃO**\n'
+        + '- [ ] Revisão ortográfica\n'
+        + '- [ ] Links testados\n'
+        + '- [ ] Resolução correta\n'
+        + '- [ ] CTA claro\n'
+        + '- [ ] Hashtags verificadas\n'
+        + '- [ ] Horário definido\n'
+        + '- [ ] Pixel e UTMs configurados\n\n'
+        + '**SCORE FINAL**\n'
+        + 'Nota: /10 | Performance acima da média: %\n'
+        + 'Veredicto: APROVADO / COM AJUSTES / REFAZER';
     }
   }
 ];
 
-// ── BUILD AGENTS UI ───────────────────────────────
-function buildAgents() {
+// ── BUILD AGENT LIST ───────────────────────────────
+(function buildAgentList() {
   var html = '';
-  AGENTS.forEach(function(ag, i) {
-    html += '<div class="agent" id="ag'+i+'">'
-      + '<div class="agent-hd" onclick="toggleAg('+i+')">'
-      +   '<div class="agent-ico">'+ag.ico+'</div>'
-      +   '<div class="agent-info">'
-      +     '<div class="agent-num">AGENTE 0'+(i+1)+'</div>'
-      +     '<div class="agent-name">'+ag.name+'</div>'
-      +     '<div class="agent-role">'+ag.role+'</div>'
-      +   '</div>'
-      +   '<div class="agent-tag" id="atag'+i+'">IDLE</div>'
+  _agents.forEach(function(ag, i) {
+    html += '<div class="agent-card" id="agCard' + i + '">'
+      + '<div class="agent-hd" onclick="SQUAD.toggleAgent(' + i + ')">'
+        + '<div class="agent-ico">' + ag.ico + '</div>'
+        + '<div class="agent-meta">'
+          + '<div class="agent-num">AGENTE 0' + (i + 1) + '</div>'
+          + '<div class="agent-name">' + ag.name + '</div>'
+          + '<div class="agent-role">' + ag.role + '</div>'
+        + '</div>'
+        + '<div class="agent-tag" id="agTag' + i + '">IDLE</div>'
       + '</div>'
-      + '<div class="agent-body" id="abody'+i+'">'
-      +   '<div class="agent-body-txt" id="atxt'+i+'"></div>'
+      + '<div class="agent-body" id="agBody' + i + '">'
+        + '<div class="agent-text" id="agText' + i + '"></div>'
       + '</div>'
-      + '</div>';
+    + '</div>';
   });
-  document.getElementById('agents').innerHTML = html;
-}
-buildAgents();
+  document.getElementById('agentList').innerHTML = html;
+})();
 
-function toggleAg(i) {
-  document.getElementById('abody'+i).classList.toggle('open');
-}
+SQUAD.toggleAgent = function(i) {
+  document.getElementById('agBody' + i).classList.toggle('open');
+};
 
-// ── GEMINI CALL ───────────────────────────────────
-function chamarGemini(prompt, onDone) {
-  // onDone(error, result)
-  if (!GEMINI_KEY) {
-    onDone('API Key não configurada!', null);
+// ── GEMINI API CALL — com fallback automático de modelo ────────────────
+// Ordem de tentativa: modelos gratuitos disponíveis para novos usuários em 2025/2026
+var _MODELS = [
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro'
+];
+var _activeModel = null; // guarda o modelo que funcionou para reusar
+
+function _callGemini(prompt, callback) {
+  if (!_key) {
+    callback('API Key não configurada. Salve sua key acima.', null);
     return;
   }
+  // Se já descobrimos qual modelo funciona, usa direto
+  if (_activeModel) {
+    _tryModel(_activeModel, prompt, callback);
+  } else {
+    _tryModelChain(0, prompt, callback);
+  }
+}
 
-  var endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_KEY;
-
-  var requestBody = {
-    contents: [{
-      role: 'user',
-      parts: [{ text: prompt }]
-    }],
-    generationConfig: {
-      maxOutputTokens: 1200,
-      temperature: 0.85
+function _tryModelChain(idx, prompt, callback) {
+  if (idx >= _MODELS.length) {
+    callback('Nenhum modelo Gemini disponível para esta key. Verifique se a key está ativa no Google AI Studio.', null);
+    return;
+  }
+  var model = _MODELS[idx];
+  _tryModel(model, prompt, function(err, result) {
+    if (err && (err.indexOf('404') !== -1 || err.indexOf('not found') !== -1 || err.indexOf('no longer available') !== -1 || err.indexOf('NOT_FOUND') !== -1)) {
+      // Este modelo não está disponível, tenta o próximo
+      _tryModelChain(idx + 1, prompt, callback);
+    } else if (!err) {
+      // Funcionou! Salva para as próximas chamadas
+      if (_activeModel !== model) {
+        _activeModel = model;
+        var badge = document.getElementById('modelBadge');
+        if (badge) badge.textContent = model.replace('gemini-','').toUpperCase();
+        SQUAD.toast('✓ Modelo: ' + model);
+      }
+      callback(null, result);
+    } else {
+      callback(err, null);
     }
-  };
+  });
+}
+
+function _tryModel(model, prompt, callback) {
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + _key;
+
+  var body = JSON.stringify({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { maxOutputTokens: 1400, temperature: 0.85 }
+  });
 
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', endpoint, true);
+  xhr.open('POST', url, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.timeout = 90000;
 
-  xhr.onload = function() {
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+
     if (xhr.status === 0) {
-      onDone('Sem resposta — verifique sua conexão.', null);
+      callback('Sem resposta da API. Verifique sua conexão à internet.', null);
       return;
     }
 
-    var parsed;
-    try {
-      parsed = JSON.parse(xhr.responseText);
-    } catch(e) {
-      onDone('Resposta inválida da API (status ' + xhr.status + ').', null);
+    var data;
+    try { data = JSON.parse(xhr.responseText); }
+    catch(e) { callback('Resposta inválida da API (HTTP ' + xhr.status + ').', null); return; }
+
+    if (xhr.status === 404) {
+      var m404 = (data.error && data.error.message) || 'NOT_FOUND';
+      callback('404: ' + m404, null);
+      return;
+    }
+    if (xhr.status === 400) {
+      var m400 = (data.error && data.error.message) || 'Requisição inválida';
+      callback('Erro 400: ' + m400, null);
+      return;
+    }
+    if (xhr.status === 403) {
+      callback('Erro 403: Key sem permissão. Verifique no Google AI Studio.', null);
+      return;
+    }
+    if (xhr.status === 429) {
+      callback('Limite atingido (429). Aguarde 1 minuto e tente novamente.', null);
+      return;
+    }
+    if (xhr.status !== 200) {
+      var mErr = (data.error && data.error.message) || ('HTTP ' + xhr.status);
+      callback('Erro: ' + mErr, null);
+      return;
+    }
+    if (data.error) {
+      callback('Gemini: ' + (data.error.message || JSON.stringify(data.error)), null);
       return;
     }
 
-    // API error
-    if (parsed.error) {
-      var msg = parsed.error.message || JSON.stringify(parsed.error);
-      onDone('Gemini: ' + msg, null);
+    var text = '';
+    try { text = data.candidates[0].content.parts[0].text; }
+    catch(e) {
+      var reason = (data.candidates && data.candidates[0] && data.candidates[0].finishReason) || 'desconhecido';
+      callback('Resposta vazia. Motivo: ' + reason, null);
       return;
     }
 
-    // Extract text
-    var txt = '';
-    try {
-      txt = parsed.candidates[0].content.parts[0].text;
-    } catch(e) {
-      // Check for safety block
-      if (parsed.candidates && parsed.candidates[0] && parsed.candidates[0].finishReason) {
-        onDone('Bloqueado: ' + parsed.candidates[0].finishReason, null);
-      } else {
-        onDone('Resposta vazia ou inesperada.', null);
-      }
-      return;
-    }
-
-    onDone(null, txt);
+    callback(null, text);
   };
 
-  xhr.onerror = function() {
-    onDone('Erro de rede. Verifique sua conexão.', null);
-  };
-
-  xhr.ontimeout = function() {
-    onDone('Timeout (90s). Tente novamente.', null);
-  };
-
-  xhr.send(JSON.stringify(requestBody));
+  xhr.onerror   = function() { callback('Erro de rede. Verifique sua conexão.', null); };
+  xhr.ontimeout = function() { callback('Timeout (90s). Tente novamente.', null); };
+  xhr.send(body);
 }
 
-// ── MAIN LAUNCH ───────────────────────────────────
-function iniciar() {
-  if (RUNNING) return;
+// ── LAUNCH PIPELINE ────────────────────────────────
+SQUAD.launch = function() {
+  if (_busy) return;
 
-  if (!GEMINI_KEY) {
-    toast('⚠️ Configure a API Key primeiro!');
-    document.getElementById('keyInp').focus();
+  // Validate key
+  if (!_key) {
+    SQUAD.toast('⚠ Configure e salve sua Gemini API Key primeiro!');
+    document.getElementById('keyInput').focus();
     return;
   }
 
+  // Validate required field
   var desc = (document.getElementById('fDesc').value || '').trim();
   if (!desc) {
-    toast('⚠️ Descreva o produto ou serviço!');
+    SQUAD.toast('⚠ Descreva o produto / serviço / tema!');
     document.getElementById('fDesc').focus();
     return;
   }
 
-  BRIEF = {
+  _brief = {
     brand: (document.getElementById('fBrand').value || '').trim() || 'Marca',
     niche: document.getElementById('fNiche').value || 'geral',
-    obj:   document.getElementById('fObj').value || 'engajamento',
+    obj:   document.getElementById('fObj').value   || 'engajamento',
     desc:  desc,
-    tone:  document.getElementById('fTone').value || 'moderno',
-    aud:   (document.getElementById('fAud').value || '').trim()
+    tone:  document.getElementById('fTone').value  || 'moderno',
+    aud:   (document.getElementById('fAud').value  || '').trim()
   };
 
-  RUNNING = true;
-  OUTS = [];
-  MJ_PROMPT = '';
+  _busy = true;
+  _outs = [];
+  _mj   = '';
 
-  // Reset UI
-  AGENTS.forEach(function(_, i) {
-    var el = document.getElementById('ag'+i);
-    el.classList.remove('running','done','error');
-    document.getElementById('atag'+i).textContent = 'IDLE';
-    document.getElementById('abody'+i).classList.remove('open');
-    document.getElementById('atxt'+i).innerHTML = '';
+  // Reset agent UI
+  _agents.forEach(function(_, i) {
+    var c = document.getElementById('agCard' + i);
+    c.classList.remove('running', 'done', 'error');
+    document.getElementById('agTag'  + i).textContent = 'IDLE';
+    document.getElementById('agBody' + i).classList.remove('open');
+    document.getElementById('agText' + i).innerHTML = '';
   });
-  document.getElementById('promptCard').classList.remove('show');
-  document.getElementById('legCard').classList.remove('show');
-  document.getElementById('extraOut').innerHTML = '';
+  document.getElementById('promptBox').classList.remove('show');
+  document.getElementById('legendaBox').classList.remove('show');
+  document.getElementById('extraOutputs').innerHTML = '';
   document.getElementById('btnArte').classList.remove('show');
-  document.getElementById('RT').innerHTML = '';
 
   var btn = document.getElementById('btnGo');
   btn.disabled = true;
   btn.textContent = '⏳ SQUAD EM AÇÃO...';
 
-  document.getElementById('progBox').classList.add('show');
-  setProgress(0);
+  document.getElementById('progWrap').classList.add('show');
+  _setProgress(0);
 
-  rodar(0);
-}
+  _runAgent(0);
+};
 
-function rodar(i) {
-  if (i >= AGENTS.length) {
-    setProgress(AGENTS.length);
-    document.getElementById('btnGo').disabled = false;
-    document.getElementById('btnGo').textContent = '▶ ACIONAR SQUAD';
-    RUNNING = false;
+function _runAgent(i) {
+  if (i >= _agents.length) {
+    // All done
+    _setProgress(_agents.length);
+    var btn = document.getElementById('btnGo');
+    btn.disabled = false;
+    btn.textContent = '▶ ACIONAR SQUAD';
+    _busy = false;
     document.getElementById('btnArte').classList.add('show');
-    toast('✓ Squad concluído! Gere a arte final abaixo.');
+    SQUAD.toast('✓ Squad concluído! Gere a arte final abaixo.');
     setTimeout(function() {
-      document.getElementById('btnArte').scrollIntoView({ behavior:'smooth', block:'center' });
+      document.getElementById('btnArte').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 400);
     return;
   }
 
-  setProgress(i);
+  _setProgress(i);
 
-  // Mark running
-  var agEl = document.getElementById('ag'+i);
-  agEl.classList.remove('done','error');
-  agEl.classList.add('running');
-  document.getElementById('atag'+i).textContent = 'RUN';
-  document.getElementById('abody'+i).classList.add('open');
-  document.getElementById('atxt'+i).innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-  agEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  var card = document.getElementById('agCard' + i);
+  card.classList.remove('done', 'error');
+  card.classList.add('running');
+  document.getElementById('agTag'  + i).textContent = '...';
+  document.getElementById('agBody' + i).classList.add('open');
+  document.getElementById('agText' + i).innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  var prompt = AGENTS[i].getPrompt();
+  var prompt = _agents[i].prompt();
 
-  chamarGemini(prompt, function(err, result) {
-    agEl.classList.remove('running');
+  _callGemini(prompt, function(err, result) {
+    card.classList.remove('running');
 
     if (err) {
-      OUTS.push('');
-      agEl.classList.add('error');
-      document.getElementById('atag'+i).textContent = 'ERR';
-      document.getElementById('atxt'+i).innerHTML =
-        '<div class="err-msg">⚠️ ' + escHtml(err) + '\n\n'
-        + 'Verifique:\n• API Key correta?\n• Conexão ativa?\n• Limite do plano gratuito atingido?</div>';
+      _outs.push('');
+      card.classList.add('error');
+      document.getElementById('agTag'  + i).textContent = '⚠';
+      document.getElementById('agText' + i).innerHTML = '<span class="err-txt">⚠ ' + _esc(err) + '</span>';
     } else {
-      OUTS.push(result);
-      agEl.classList.add('done');
-      document.getElementById('atag'+i).textContent = '✓';
-      document.getElementById('atxt'+i).innerHTML = renderMd(result.substring(0, 500) + (result.length > 500 ? '…' : ''));
-      processar(i, result);
+      _outs.push(result);
+      card.classList.add('done');
+      document.getElementById('agTag'  + i).textContent = '✓';
+      document.getElementById('agText' + i).innerHTML = _renderText(result.substring(0, 480) + (result.length > 480 ? '…' : ''));
+      _handleOutput(i, result);
     }
 
-    setTimeout(function() { rodar(i + 1); }, 300);
+    // Small pause then continue
+    setTimeout(function() { _runAgent(i + 1); }, 250);
   });
 }
 
-function processar(i, text) {
-  // Agente 2 = fotógrafo
+function _handleOutput(i, text) {
+  // Agent 2 = Dir Fotografia → extract image prompt
   if (i === 2) {
-    var m = text.match(/\*\*PROMPT DE IMAGEM\*\*\n([\s\S]+?)(?:\n\n\*\*|$)/i);
-    MJ_PROMPT = m ? m[1].trim().replace(/^```\w*\n?/,'').replace(/```$/,'').trim() : '';
-    if (!MJ_PROMPT) MJ_PROMPT = BRIEF.niche + ' professional atmosphere, cinematic, 8k, no text';
-    document.getElementById('promptTxt').textContent = MJ_PROMPT;
-    document.getElementById('promptCard').classList.add('show');
+    var patterns = [
+      /\*\*PROMPT DE IMAGEM\*\*\n([\s\S]+?)(?=\n\n\*\*|\n\*\*|$)/i,
+      /PROMPT DE IMAGEM[:\s]*\n([\s\S]+?)(?=\n\n\*\*|\n\*\*|$)/i
+    ];
+    _mj = '';
+    for (var p = 0; p < patterns.length; p++) {
+      var m = text.match(patterns[p]);
+      if (m && m[1].trim().length > 20) {
+        _mj = m[1].trim().replace(/^```\w*\n?/, '').replace(/```$/, '').trim();
+        break;
+      }
+    }
+    if (!_mj) _mj = _brief.niche + ' professional atmosphere, cinematic lighting, 8k resolution, no text, no watermark';
+    document.getElementById('promptTxt').textContent = _mj;
+    document.getElementById('promptBox').classList.add('show');
   }
 
-  // Agente 4 = legenda
+  // Agent 4 = Legenda
   if (i === 4) {
-    document.getElementById('legTxt').textContent = text.replace(/\*\*/g,'');
-    document.getElementById('legCard').classList.add('show');
+    document.getElementById('legendaTxt').textContent = text.replace(/\*\*/g, '');
+    document.getElementById('legendaBox').classList.add('show');
 
-    var out = document.getElementById('extraOut');
-    out.innerHTML = [
-      {t:'🎨 DIREÇÃO DE ARTE',    idx:3},
-      {t:'📸 DIR. FOTOGRAFIA',    idx:2},
-      {t:'✍️ COPY DO CARD',       idx:1},
-      {t:'🧠 ESTRATÉGIA',         idx:0}
-    ].map(function(d) {
-      return '<div class="out-box">'
-        + '<div class="out-hd" onclick="toggleOut(\'oo'+d.idx+'\')">'
-        +   '<div class="out-title">'+d.t+'</div>'
-        +   '<span style="color:#444">▾</span>'
+    // Build collapsibles for previous agents
+    var html = '';
+    [{title:'🎨 DIR. DE ARTE', idx:3}, {title:'📸 DIR. FOTOGRAFIA', idx:2},
+     {title:'✍️ COPY DO CARD', idx:1}, {title:'🧠 ESTRATÉGIA COMPLETA', idx:0}]
+    .forEach(function(d) {
+      var id = 'coll' + d.idx;
+      html += '<div class="collapsible">'
+        + '<div class="coll-hd" onclick="SQUAD.toggleColl(\'' + id + '\')">'
+          + '<div class="coll-title">' + d.title + '</div>'
+          + '<span style="color:#555">▾</span>'
         + '</div>'
-        + '<div class="out-body" id="oo'+d.idx+'">'+renderMd(OUTS[d.idx]||'')+'</div>'
-        + '</div>';
-    }).join('');
+        + '<div class="coll-body" id="' + id + '">' + _renderText(_outs[d.idx] || '') + '</div>'
+      + '</div>';
+    });
+    document.getElementById('extraOutputs').innerHTML = html;
   }
 
   if (i === 5) {
-    document.getElementById('extraOut').innerHTML +=
-      '<div class="out-box">'
-      + '<div class="out-hd" onclick="toggleOut(\'ooT\')">'
-      +   '<div class="out-title">📊 TRÁFEGO PAGO</div><span style="color:#444">▾</span>'
+    document.getElementById('extraOutputs').innerHTML +=
+      '<div class="collapsible">'
+      + '<div class="coll-hd" onclick="SQUAD.toggleColl(\'collTraf\')">'
+        + '<div class="coll-title">📊 TRÁFEGO PAGO</div>'
+        + '<span style="color:#555">▾</span>'
       + '</div>'
-      + '<div class="out-body" id="ooT">'+renderMd(text)+'</div>'
+      + '<div class="coll-body" id="collTraf">' + _renderText(text) + '</div>'
       + '</div>';
   }
 
   if (i === 6) {
-    document.getElementById('extraOut').innerHTML +=
-      '<div class="out-box" style="border-color:rgba(255,204,0,.3)">'
-      + '<div class="out-hd" onclick="toggleOut(\'ooDC\')">'
-      +   '<div class="out-title">🏆 REVISÃO FINAL — DIR. CRIATIVO</div><span style="color:#444">▾</span>'
+    document.getElementById('extraOutputs').innerHTML +=
+      '<div class="collapsible" style="border-color:rgba(255,204,0,.25)">'
+      + '<div class="coll-hd" onclick="SQUAD.toggleColl(\'collDC\')">'
+        + '<div class="coll-title">🏆 DIR. CRIATIVO — REVISÃO FINAL</div>'
+        + '<span style="color:#555">▾</span>'
       + '</div>'
-      + '<div class="out-body open" id="ooDC">'+renderMd(text)+'</div>'
+      + '<div class="coll-body open" id="collDC">' + _renderText(text) + '</div>'
       + '</div>';
   }
 }
 
-function setProgress(cur) {
-  var pct = Math.round(cur / AGENTS.length * 100);
+function _setProgress(cur) {
+  var pct = Math.round(cur / _agents.length * 100);
   document.getElementById('progFill').style.width = pct + '%';
   document.getElementById('progPct').textContent = pct + '%';
-  document.getElementById('progLbl').textContent = cur < AGENTS.length
-    ? 'Agente ' + (cur+1) + ': ' + AGENTS[cur].name
+  document.getElementById('progLabel').textContent = cur < _agents.length
+    ? 'Agente ' + (cur + 1) + ': ' + _agents[cur].name
     : '✓ Pipeline concluído!';
 }
 
-// ── ARTE FINAL ────────────────────────────────────
-function abrirModal() {
+// ── ARTE FINAL ─────────────────────────────────────
+SQUAD.openModal = function() {
   var modal = document.getElementById('modal');
   modal.classList.add('open');
-  modal.scrollTop = 0;
 
-  // Reset
-  document.getElementById('prevSpin').classList.remove('gone');
+  // Reset modal state
+  document.getElementById('previewSpinner').classList.remove('hidden');
   document.getElementById('spinTxt').textContent = 'GERANDO IMAGEM...';
-  document.getElementById('modalMsg').className = 'modal-msg';
-  document.getElementById('modalMsg').textContent = 'Gerando imagem com Pollinations AI...';
-  document.getElementById('btnDl').disabled = true;
-  document.getElementById('stepLog').innerHTML = '';
-  document.getElementById('prevInner').innerHTML = '';
+  document.getElementById('modalStatus').className = 'modal-status';
+  document.getElementById('modalStatus').textContent = 'Gerando com Pollinations AI...';
+  document.getElementById('btnDownload').disabled = true;
+  document.getElementById('stepsList').innerHTML = '';
+  document.getElementById('previewInner').innerHTML = '';
   document.getElementById('btnArte').disabled = true;
 
-  // Set ratio
-  document.getElementById('prevRatio').style.paddingTop = (FMT.h / FMT.w * 100) + '%';
+  // Set aspect ratio
+  document.getElementById('previewRatio').style.paddingTop = (_fmt.h / _fmt.w * 100) + '%';
 
-  // Resize RT
-  var rt = document.getElementById('RT');
-  rt.style.width  = FMT.w + 'px';
-  rt.style.height = FMT.h + 'px';
+  // Set render target size
+  var rt = document.getElementById('RENDER_TARGET');
+  rt.style.cssText = 'position:fixed;left:-19999px;top:0;width:' + _fmt.w + 'px;height:' + _fmt.h + 'px;overflow:hidden;z-index:-1;pointer-events:none;';
 
-  MODAL_STEPS = [];
-  gerarArte();
+  _artSteps = [];
+  _generateArt();
+};
+
+function _addStep(txt) {
+  if (_artSteps.length > 0) _artSteps[_artSteps.length - 1].s = 'ok';
+  _artSteps.push({ t: txt, s: 'active' });
+  _renderSteps();
+  document.getElementById('spinTxt').textContent = txt.substring(0, 24).toUpperCase();
 }
 
-function addModalStep(txt) {
-  if (MODAL_STEPS.length > 0) MODAL_STEPS[MODAL_STEPS.length-1].done = true;
-  MODAL_STEPS.push({ txt:txt, done:false, err:false });
-  renderModalSteps();
-  document.getElementById('spinTxt').textContent = txt.substring(0,22).toUpperCase();
-}
-
-function renderModalSteps() {
-  document.getElementById('stepLog').innerHTML = MODAL_STEPS.map(function(s) {
-    var cls = s.done ? 'ok' : s.err ? 'err' : 'active';
-    var ic  = s.done ? '✓' : s.err ? '✕' : '●';
-    return '<div class="step-row '+cls+'">'+ic+' '+escHtml(s.txt)+'</div>';
+function _renderSteps() {
+  document.getElementById('stepsList').innerHTML = _artSteps.map(function(s) {
+    var ic = s.s === 'ok' ? '✓' : s.s === 'err' ? '✕' : '●';
+    return '<div class="step-item ' + s.s + '">' + ic + ' ' + _esc(s.t) + '</div>';
   }).join('');
 }
 
-function gerarArte() {
-  addModalStep('Gerando imagem com Pollinations AI...');
-
+function _generateArt() {
+  _addStep('Gerando imagem com Pollinations AI...');
   var seed = Math.floor(Math.random() * 99999);
-  var enc  = encodeURIComponent(MJ_PROMPT.substring(0, 350));
-  var url  = 'https://image.pollinations.ai/prompt/' + enc
-    + '?width=' + FMT.w + '&height=' + FMT.h
+  var enc = encodeURIComponent(_mj.substring(0, 350));
+  var url = 'https://image.pollinations.ai/prompt/' + enc
+    + '?width=' + _fmt.w + '&height=' + _fmt.h
     + '&seed=' + seed + '&model=flux&nologo=true&enhance=true';
 
-  var imgEl = new Image();
-  imgEl.crossOrigin = 'anonymous';
+  var img = new Image();
+  img.crossOrigin = 'anonymous';
 
   var timer = setTimeout(function() {
-    addModalStep('Timeout — usando gradiente de fundo...');
-    buildCard(null);
-  }, 22000);
+    _addStep('Timeout na imagem — usando gradiente...');
+    _buildCard(null);
+  }, 20000);
 
-  imgEl.onload = function() {
+  img.onload = function() {
     clearTimeout(timer);
-    addModalStep('Imagem carregada! Montando card...');
-    buildCard(imgEl);
+    _addStep('Imagem gerada! Montando layout...');
+    _buildCard(img);
   };
-
-  imgEl.onerror = function() {
+  img.onerror = function() {
     clearTimeout(timer);
-    addModalStep('Imagem indisponível — usando gradiente...');
-    buildCard(null);
+    _addStep('Erro na imagem — usando gradiente...');
+    _buildCard(null);
   };
-
-  imgEl.src = url;
+  img.src = url;
 }
 
-function buildCard(imgEl) {
-  // Parse art direction
+function _buildCard(imgEl) {
+  // Parse color/style JSON from Dir. Arte
   var cs = {};
-  var sm = (OUTS[3]||'').match(/CARD_JSON_START\s*([\s\S]*?)\s*CARD_JSON_END/);
-  if (sm) { try { cs = JSON.parse(sm[1].trim()); } catch(e){} }
+  var sm = (_outs[3] || '').match(/CARD_JSON_START\s*([\s\S]*?)\s*CARD_JSON_END/);
+  if (sm) { try { cs = JSON.parse(sm[1].trim()); } catch(e) {} }
 
   var C = {
     bg1:     cs.bg1     || '#0a0a0a',
@@ -1040,7 +1183,7 @@ function buildCard(imgEl) {
     overlay: cs.overlay || 'rgba(0,0,0,0.65)',
     hlColor: cs.hlColor || '#FFFFFF',
     hlFont:  cs.hlFont  || 'Bebas Neue',
-    hlSize:  parseInt(cs.hlSize)  || (FMT.h>1500?110:FMT.h>1100?88:72),
+    hlSize:  parseInt(cs.hlSize) || (_fmt.h > 1500 ? 110 : _fmt.h > 1100 ? 88 : 72),
     eyColor: cs.eyColor || '#FFCC00',
     stColor: cs.stColor || 'rgba(255,255,255,0.80)',
     badgeBg: cs.badgeBg || '#FF3C00',
@@ -1051,230 +1194,259 @@ function buildCard(imgEl) {
     decor:   cs.decor   || 'rgba(255,255,255,0.04)'
   };
 
-  function gField(label) {
+  // Extract copy fields
+  function gF(label) {
     var rx = new RegExp('\\*\\*' + label + '\\*\\*\\n([^\\n\\*]+)', 'i');
-    var m  = (OUTS[1]||'').match(rx);
-    return m ? m[1].trim().replace(/^\[|\]$/g,'') : '';
+    var m = (_outs[1] || '').match(rx);
+    return m ? m[1].trim().replace(/^\[|\]$/g, '') : '';
   }
+  var badge    = gF('BADGE');
+  var eyebrow  = gF('EYEBROW');
+  var headline = gF('HEADLINE') || _brief.brand.toUpperCase();
+  var subtext  = gF('SUBTEXT');
+  var cta      = gF('CTA');
+  var brandTag = '@' + _brief.brand.toLowerCase().replace(/\s+/g, '');
 
-  var badge    = gField('BADGE');
-  var eyebrow  = gField('EYEBROW');
-  var headline = gField('HEADLINE') || BRIEF.brand.toUpperCase();
-  var subtext  = gField('SUBTEXT');
-  var cta      = gField('CTA');
-  var brand    = '@' + BRIEF.brand.toLowerCase().replace(/\s+/g,'');
+  var W = _fmt.w, H = _fmt.h, pad = Math.round(W * 0.065), hl = C.hlSize;
 
-  var W = FMT.w, H = FMT.h, pad = Math.round(W*.065), hl = C.hlSize;
-
-  function mk(tag, css, txt) {
+  function el(tag, css, txt) {
     var d = document.createElement(tag);
     d.style.cssText = css;
     if (txt !== undefined) d.textContent = txt;
     return d;
   }
 
-  // Build background CSS
+  // ── Background ──
   var bgCss;
   if (imgEl) {
     var cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     var ctx = cv.getContext('2d');
-    var iR = imgEl.naturalWidth / imgEl.naturalHeight;
-    var cR = W / H;
+    var iR = imgEl.naturalWidth / imgEl.naturalHeight, cR = W / H;
     var dw, dh, dx, dy;
-    if (iR > cR) { dh=H; dw=H*iR; dx=(W-dw)/2; dy=0; }
-    else          { dw=W; dh=W/iR; dx=0; dy=(H-dh)/2; }
+    if (iR > cR) { dh = H; dw = H * iR; dx = (W - dw) / 2; dy = 0; }
+    else          { dw = W; dh = W / iR; dx = 0; dy = (H - dh) / 2; }
     ctx.drawImage(imgEl, dx, dy, dw, dh);
-    bgCss = 'background-image:url('+cv.toDataURL('image/jpeg',.9)+');background-size:cover;';
+    bgCss = 'background-image:url(' + cv.toDataURL('image/jpeg', .9) + ');background-size:cover;background-position:center;';
   } else {
-    bgCss = 'background:linear-gradient(160deg,'+C.bg1+' 0%,'+C.bg2+' 100%);';
+    bgCss = 'background:linear-gradient(160deg,' + C.bg1 + ' 0%,' + C.bg2 + ' 100%);';
   }
 
-  var card = mk('div', 'position:relative;width:'+W+'px;height:'+H+'px;overflow:hidden;'+bgCss);
+  var card = el('div', 'position:relative;width:' + W + 'px;height:' + H + 'px;overflow:hidden;' + bgCss);
 
-  // Overlay
-  card.appendChild(mk('div','position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.4) 55%,rgba(0,0,0,.08) 100%);'));
+  // Dark gradient overlay
+  card.appendChild(el('div',
+    'position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.38) 55%,rgba(0,0,0,.08) 100%);'));
 
-  // SVG decor
-  var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox','0 0 '+W+' '+H);
-  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
-  function circ(cx,cy,r){
-    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);c.setAttribute('fill',C.decor);
+  // SVG decor circles
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
+  function circ(cx, cy, r) {
+    var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+    c.setAttribute('r', r);   c.setAttribute('fill', C.decor);
     return c;
   }
-  svg.appendChild(circ(Math.round(W*.84),Math.round(H*.11),Math.round(W*.18)));
-  svg.appendChild(circ(Math.round(W*.08),Math.round(H*.4),Math.round(W*.09)));
+  svg.appendChild(circ(Math.round(W * .84), Math.round(H * .10), Math.round(W * .18)));
+  svg.appendChild(circ(Math.round(W * .08), Math.round(H * .38), Math.round(W * .09)));
   card.appendChild(svg);
 
   // Badge
   if (badge) {
-    var bsz = Math.round(hl*.16);
-    card.appendChild(mk('div',
-      'position:absolute;top:'+pad+'px;left:'+pad+'px;z-index:10;'
-      +'background:'+C.badgeBg+';color:'+C.badgeFg+';'
-      +'font-family:Space Mono,monospace;font-size:'+bsz+'px;letter-spacing:3px;'
-      +'padding:'+Math.round(bsz*.5)+'px '+Math.round(bsz*1.1)+'px;'
-      +'border-radius:4px;text-transform:uppercase;',
+    var bfs = Math.round(hl * .16);
+    card.appendChild(el('div',
+      'position:absolute;top:' + pad + 'px;left:' + pad + 'px;'
+      + 'background:' + C.badgeBg + ';color:' + C.badgeFg + ';'
+      + 'font-family:Space Mono,monospace;font-size:' + bfs + 'px;letter-spacing:3px;'
+      + 'padding:' + Math.round(bfs * .5) + 'px ' + Math.round(bfs * 1.1) + 'px;'
+      + 'border-radius:4px;text-transform:uppercase;z-index:10;',
       badge));
   }
 
   // Brand tag
-  card.appendChild(mk('div',
-    'position:absolute;top:'+pad+'px;right:'+pad+'px;z-index:10;'
-    +'font-family:Space Mono,monospace;font-size:'+Math.round(hl*.13)+'px;'
-    +'color:rgba(255,255,255,.3);letter-spacing:2px;',
-    brand));
+  card.appendChild(el('div',
+    'position:absolute;top:' + pad + 'px;right:' + pad + 'px;'
+    + 'font-family:Space Mono,monospace;font-size:' + Math.round(hl * .13) + 'px;'
+    + 'color:rgba(255,255,255,.35);letter-spacing:2px;z-index:10;',
+    brandTag));
 
-  // Content bottom
-  var cont = mk('div','position:absolute;bottom:'+Math.round(pad*1.4)+'px;left:'+pad+'px;right:'+pad+'px;z-index:10;');
+  // Content block
+  var cont = el('div',
+    'position:absolute;bottom:' + Math.round(pad * 1.4) + 'px;'
+    + 'left:' + pad + 'px;right:' + pad + 'px;z-index:10;');
 
-  if (eyebrow) cont.appendChild(mk('div',
-    'font-family:Space Mono,monospace;font-size:'+Math.round(hl*.19)+'px;'
-    +'color:'+C.eyColor+';letter-spacing:4px;text-transform:uppercase;'
-    +'margin-bottom:'+Math.round(hl*.12)+'px;',eyebrow));
-
-  cont.appendChild(mk('div',
-    'font-family:'+C.hlFont+',Impact,sans-serif;font-weight:700;font-size:'+hl+'px;'
-    +'color:'+C.hlColor+';line-height:1.0;text-transform:uppercase;letter-spacing:1px;'
-    +'margin-bottom:'+Math.round(hl*.14)+'px;text-shadow:0 2px 30px rgba(0,0,0,.7);',headline));
-
-  if (subtext) cont.appendChild(mk('div',
-    'font-family:Inter,sans-serif;font-size:'+Math.round(hl*.21)+'px;'
-    +'color:'+C.stColor+';line-height:1.45;margin-bottom:'+Math.round(hl*.22)+'px;',subtext));
-
-  if (cta) {
-    var csz=Math.round(hl*.17);
-    cont.appendChild(mk('div',
-      'display:inline-block;font-family:Space Mono,monospace;font-size:'+csz+'px;'
-      +'color:'+C.ctaColor+';border:1px solid rgba(255,255,255,.4);'
-      +'padding:'+Math.round(csz*.6)+'px '+Math.round(csz*1.4)+'px;'
-      +'letter-spacing:2px;text-transform:uppercase;border-radius:3px;',cta));
+  if (eyebrow) {
+    cont.appendChild(el('div',
+      'font-family:Space Mono,monospace;font-size:' + Math.round(hl * .19) + 'px;'
+      + 'color:' + C.eyColor + ';letter-spacing:4px;text-transform:uppercase;'
+      + 'margin-bottom:' + Math.round(hl * .12) + 'px;',
+      eyebrow));
   }
+  cont.appendChild(el('div',
+    'font-family:' + C.hlFont + ',Impact,sans-serif;font-weight:700;'
+    + 'font-size:' + hl + 'px;color:' + C.hlColor + ';line-height:1.0;'
+    + 'text-transform:uppercase;letter-spacing:1px;'
+    + 'margin-bottom:' + Math.round(hl * .14) + 'px;'
+    + 'text-shadow:0 2px 30px rgba(0,0,0,.7);',
+    headline));
 
+  if (subtext) {
+    cont.appendChild(el('div',
+      'font-family:Inter,sans-serif;font-size:' + Math.round(hl * .21) + 'px;'
+      + 'color:' + C.stColor + ';line-height:1.45;'
+      + 'margin-bottom:' + Math.round(hl * .22) + 'px;',
+      subtext));
+  }
+  if (cta) {
+    var ctaFs = Math.round(hl * .17);
+    cont.appendChild(el('div',
+      'display:inline-block;font-family:Space Mono,monospace;font-size:' + ctaFs + 'px;'
+      + 'color:' + C.ctaColor + ';border:1px solid rgba(255,255,255,.4);'
+      + 'padding:' + Math.round(ctaFs * .6) + 'px ' + Math.round(ctaFs * 1.4) + 'px;'
+      + 'letter-spacing:2px;text-transform:uppercase;border-radius:3px;',
+      cta));
+  }
   card.appendChild(cont);
-  card.appendChild(mk('div','position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,'+C.acc1+','+C.acc2+');'));
 
-  // Insert full-size into RT
-  var rt = document.getElementById('RT');
+  // Accent line bottom
+  card.appendChild(el('div',
+    'position:absolute;bottom:0;left:0;right:0;height:4px;'
+    + 'background:linear-gradient(90deg,' + C.acc1 + ',' + C.acc2 + ');'));
+
+  // Inject into hidden render target
+  var rt = document.getElementById('RENDER_TARGET');
   rt.innerHTML = '';
   rt.appendChild(card);
 
-  // Show scaled preview
+  // Wait for fonts, then show scaled preview
   setTimeout(function() {
-    var wW = document.getElementById('prevOuter').offsetWidth;
-    var sc = wW / W;
-    var inner = document.getElementById('prevInner');
-    inner.innerHTML = '';
-    var wrap = mk('div','position:absolute;top:0;left:0;width:'+W+'px;height:'+H+'px;transform:scale('+sc+');transform-origin:top left;');
-    wrap.appendChild(card.cloneNode(true));
-    inner.appendChild(wrap);
+    var wrapW = document.getElementById('previewWrap').offsetWidth;
+    var scale = wrapW / W;
 
-    document.getElementById('prevSpin').classList.add('gone');
-    if (MODAL_STEPS.length>0) MODAL_STEPS[MODAL_STEPS.length-1].done=true;
-    renderModalSteps();
-    document.getElementById('modalMsg').className = 'modal-msg ok';
-    document.getElementById('modalMsg').textContent = '✓ Arte final pronta! Verifique e baixe.';
-    document.getElementById('btnDl').disabled = false;
+    var inner = document.getElementById('previewInner');
+    inner.innerHTML = '';
+    var sw = document.createElement('div');
+    sw.style.cssText = 'position:absolute;top:0;left:0;'
+      + 'width:' + W + 'px;height:' + H + 'px;'
+      + 'transform:scale(' + scale + ');transform-origin:top left;';
+    sw.appendChild(card.cloneNode(true));
+    inner.appendChild(sw);
+
+    if (_artSteps.length > 0) _artSteps[_artSteps.length - 1].s = 'ok';
+    _renderSteps();
+
+    document.getElementById('previewSpinner').classList.add('hidden');
+    document.getElementById('modalStatus').className = 'modal-status ok';
+    document.getElementById('modalStatus').textContent = '✓ Arte gerada! Verifique e baixe abaixo.';
+    document.getElementById('btnDownload').disabled = false;
     document.getElementById('btnArte').disabled = false;
-  }, 700);
+  }, 800);
 }
 
-// ── DOWNLOAD ─────────────────────────────────────
-function baixar() {
-  var btn = document.getElementById('btnDl');
+// ── DOWNLOAD ───────────────────────────────────────
+SQUAD.download = function() {
+  var btn = document.getElementById('btnDownload');
   btn.disabled = true;
   btn.textContent = '⏳ CAPTURANDO...';
 
-  var rt = document.getElementById('RT');
+  var rt = document.getElementById('RENDER_TARGET');
   var cardEl = rt.firstElementChild;
-
   if (!cardEl) {
-    toast('⚠️ Gere a arte primeiro!');
+    SQUAD.toast('⚠ Gere a arte primeiro!');
     btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG';
     return;
   }
 
-  // Bring on-screen briefly
+  // Bring on-screen briefly for capture
   rt.style.left = '0';
   rt.style.zIndex = '9999';
 
   setTimeout(function() {
     html2canvas(cardEl, {
-      width: FMT.w, height: FMT.h, scale: 1,
+      width: _fmt.w, height: _fmt.h, scale: 1,
       useCORS: true, allowTaint: true,
       backgroundColor: null, logging: false
     }).then(function(canvas) {
-      rt.style.left = '-29999px';
-      rt.style.zIndex = '-1';
+      rt.style.left = '-19999px'; rt.style.zIndex = '-1';
 
       canvas.toBlob(function(blob) {
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
-        a.download = BRIEF.brand.replace(/\s+/g,'-').toLowerCase() + '-' + FMT.w + 'x' + FMT.h + '.png';
+        a.download = _brief.brand.replace(/\s+/g, '-').toLowerCase() + '-' + _fmt.w + 'x' + _fmt.h + '.png';
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
         btn.textContent = '✓ BAIXADO!';
-        toast('✓ PNG salvo no seu dispositivo!');
-        setTimeout(function(){ btn.disabled=false; btn.textContent='⬇ BAIXAR PNG'; }, 3000);
+        SQUAD.toast('✓ PNG salvo com sucesso!');
+        setTimeout(function() { btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG'; }, 3000);
       }, 'image/png', 1.0);
 
     }).catch(function() {
-      rt.style.left = '-29999px';
-      rt.style.zIndex = '-1';
+      rt.style.left = '-19999px'; rt.style.zIndex = '-1';
       // HTML fallback
-      var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
-        + '<style>*{margin:0;padding:0}body{width:'+FMT.w+'px;height:'+FMT.h+'px;overflow:hidden}</style>'
+      var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+        + '<style>*{margin:0;padding:0}body{width:' + _fmt.w + 'px;height:' + _fmt.h + 'px;overflow:hidden}</style>'
         + '</head><body>' + rt.innerHTML + '</body></html>';
-      var b = new Blob([html],{type:'text/html'});
+      var b = new Blob([h], { type: 'text/html' });
       var u = URL.createObjectURL(b);
       var a = document.createElement('a');
-      a.href=u; a.download=BRIEF.brand.replace(/\s+/g,'-').toLowerCase()+'.html';
+      a.href = u;
+      a.download = _brief.brand.replace(/\s+/g, '-').toLowerCase() + '.html';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(u);
-      btn.disabled=false; btn.textContent='⬇ BAIXAR PNG';
-      toast('Salvo como HTML — abra no Chrome para screenshot');
+      btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG';
+      SQUAD.toast('Salvo como HTML — abra no Chrome e use Ctrl+Shift+P → Screenshot');
     });
   }, 500);
-}
+};
 
-function fecharModal() {
+SQUAD.closeModal = function() {
   document.getElementById('modal').classList.remove('open');
   document.getElementById('btnArte').disabled = false;
+};
+
+// ── UTIL ───────────────────────────────────────────
+SQUAD.toggleColl = function(id) { document.getElementById(id).classList.toggle('open'); };
+
+SQUAD.copyEl = function(id, btn) {
+  var txt = document.getElementById(id).textContent;
+  function ok() {
+    var orig = btn.textContent;
+    btn.textContent = '✓ Copiado!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(ok);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); ok();
+  }
+};
+
+SQUAD.toast = function(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 2800);
+};
+
+function _renderText(t) {
+  return (t || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
 }
 
-// ── HELPERS ───────────────────────────────────────
-function toggleAg(i) {
-  document.getElementById('abody'+i).classList.toggle('open');
+function _esc(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-function toggleOut(id) {
-  document.getElementById(id).classList.toggle('open');
-}
-function copiar(id, btn) {
-  var txt = document.getElementById(id).textContent;
-  var orig = btn.textContent;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(txt).then(function(){ btn.textContent='✓ Copiado!'; setTimeout(function(){ btn.textContent=orig; },2000); });
-  } else {
-    var ta=document.createElement('textarea');ta.value=txt;
-    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    btn.textContent='✓ Copiado!'; setTimeout(function(){ btn.textContent=orig; },2000);
-  }
-}
-function renderMd(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-}
-function escHtml(t) {
-  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function toast(msg) {
-  var t=document.createElement('div');t.className='toast';t.textContent=msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ if(t.parentNode)t.parentNode.removeChild(t); },2800);
-}
+
+// ── INIT ───────────────────────────────────────────
+SQUAD.loadKey();
 </script>
 </body>
 </html>
