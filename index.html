@@ -3,1450 +3,1053 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SQUAD — Instagram Card Creator</title>
+<title>SQUAD DUPLO — Card Creator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{background:#080808;color:#e8e8e8;font-family:'DM Sans',sans-serif;min-height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { height: 100%; }
-body {
-  background: #0c0c0c; color: #f0f0f0;
-  font-family: 'Inter', system-ui, sans-serif;
-  min-height: 100%; overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* HEADER */
-.hdr {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(12,12,12,.97); backdrop-filter: blur(12px);
-  border-bottom: 1px solid #222;
-  padding: 12px 16px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.logo { font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 5px; }
-.logo b { color: #ff3c00; font-weight: 400; }
-.badge-live {
-  font-family: 'Space Mono'; font-size: 9px; color: #22c55e;
-  border: 1px solid rgba(34,197,94,.35); border-radius: 20px;
-  padding: 4px 10px; display: flex; align-items: center; gap: 5px;
-}
-.badge-live::before {
-  content: ''; width: 5px; height: 5px; border-radius: 50%;
-  background: #22c55e; animation: blink 2s infinite; flex-shrink: 0;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
-
-/* PAGE */
-.page { padding: 14px 14px 80px; max-width: 520px; margin: 0 auto; }
-
-/* BOX CARD */
-.box {
-  background: #161616; border: 1px solid #242424;
-  border-radius: 14px; padding: 16px; margin-bottom: 10px;
-}
-.box-title {
-  font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px;
-  color: #ff3c00; text-transform: uppercase; margin-bottom: 14px;
-  display: flex; align-items: center; gap: 8px;
-}
-.box-title::after { content: ''; flex: 1; height: 1px; background: #242424; }
-
-/* KEY BOX */
-.key-status {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 13px; border-radius: 10px; margin-bottom: 10px;
-  font-size: 13px; font-family: 'Space Mono';
-}
-.key-status.has-key {
-  background: #071a0e; border: 1px solid rgba(34,197,94,.3);
-  color: #22c55e;
-}
-.key-status.no-key {
-  background: #1a1a1a; border: 1px solid #2a2a2a;
-  color: #666;
-}
-.key-row { display: flex; gap: 8px; }
-.key-inp {
-  flex: 1; min-width: 0;
-  background: #1a1a1a; border: 1px solid #2a2a2a; color: #f0f0f0;
-  padding: 11px 12px; border-radius: 10px;
-  font-family: 'Space Mono'; font-size: 12px; outline: none;
-  transition: border-color .2s;
-}
-.key-inp:focus { border-color: #38bdf8; }
-.key-btn {
-  background: #38bdf8; color: #000; border: none;
-  padding: 11px 16px; border-radius: 10px;
-  font-weight: 700; font-size: 14px; cursor: pointer;
-  white-space: nowrap; flex-shrink: 0;
-}
-.key-btn:active { opacity: .8; }
-.key-clear {
-  background: #1a1a1a; border: 1px solid #2a2a2a; color: #666;
-  padding: 11px 14px; border-radius: 10px;
-  font-size: 13px; cursor: pointer; flex-shrink: 0;
-}
-.key-hint { font-size: 12px; color: #555; margin-top: 8px; line-height: 1.6; }
-.key-hint a { color: #38bdf8; text-decoration: none; }
-
-/* FORM FIELDS */
-.f { margin-bottom: 11px; }
-.f:last-child { margin-bottom: 0; }
-.f label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .3px; }
-.inp, .sel, .ta {
-  display: block; width: 100%;
-  background: #1a1a1a; border: 1px solid #2a2a2a; color: #f0f0f0;
-  padding: 12px 14px; border-radius: 10px;
-  font-family: 'Inter'; font-size: 15px; outline: none;
-  transition: border-color .2s; appearance: none; -webkit-appearance: none;
-}
-.inp:focus, .sel:focus, .ta:focus { border-color: #ff3c00; }
-.sel-w { position: relative; }
-.sel-w::after {
-  content: '▾'; position: absolute; right: 14px; top: 50%;
-  transform: translateY(-50%); color: #555;
-  pointer-events: none; font-size: 14px;
-}
-.sel { padding-right: 36px; }
-.sel option { background: #1a1a1a; }
-.ta { resize: vertical; min-height: 80px; line-height: 1.5; }
-
-/* FORMAT */
-.fmt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-.fmt-opt {
-  background: #1a1a1a; border: 1.5px solid #2a2a2a;
-  border-radius: 12px; padding: 12px 6px; cursor: pointer;
-  text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;
-  transition: border-color .15s, background .15s;
-}
-.fmt-opt.on { border-color: #ff3c00; background: rgba(255,60,0,.08); }
-.fmt-thumb { background: #2a2a2a; border: 1.5px solid #383838; border-radius: 3px; }
-.fmt-opt.on .fmt-thumb { border-color: #ff3c00; }
-.fmt-name { font-family: 'Bebas Neue'; font-size: 13px; letter-spacing: 1px; color: #666; }
-.fmt-size { font-family: 'Space Mono'; font-size: 8px; color: #444; }
-.fmt-opt.on .fmt-name { color: #ff3c00; }
-
-/* BIG BUTTONS */
-.btn-go {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 17px; margin-bottom: 10px;
-  background: #ff3c00; color: #fff; border: none; border-radius: 14px;
-  font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 4px;
-  cursor: pointer; transition: opacity .15s, transform .1s;
-}
-.btn-go:active { opacity: .85; transform: scale(.98); }
-.btn-go:disabled { background: #222; color: #444; cursor: not-allowed; transform: none; opacity: 1; }
-
-.btn-arte {
-  display: none; width: 100%; align-items: center; justify-content: center; gap: 8px;
-  padding: 17px; margin-bottom: 10px;
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
-  color: #fff; border: none; border-radius: 14px;
-  font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 3px;
-  cursor: pointer; transition: opacity .15s, transform .1s;
-}
-.btn-arte.show { display: flex; }
-.btn-arte:active { opacity: .85; transform: scale(.98); }
-.btn-arte:disabled { background: #222; color: #444; cursor: not-allowed; transform: none; opacity: 1; }
-
-/* PROGRESS */
-.prog-wrap { display: none; margin-bottom: 10px; }
-.prog-wrap.show { display: block; }
-.prog-track { height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; margin-bottom: 7px; }
-.prog-fill { height: 100%; background: linear-gradient(90deg, #ff3c00, #ffcc00); width: 0%; transition: width .5s; }
-.prog-info { font-family: 'Space Mono'; font-size: 10px; color: #555; display: flex; justify-content: space-between; }
-
-/* AGENTS */
-.agent-card {
-  background: #161616; border: 1px solid #242424;
-  border-radius: 12px; margin-bottom: 8px; overflow: hidden;
-  transition: border-color .25s;
-}
-.agent-card.running { border-color: #ff3c00; }
-.agent-card.done { border-color: rgba(34,197,94,.4); }
-.agent-card.error { border-color: rgba(239,68,68,.4); }
-
-.agent-hd {
-  display: flex; align-items: center; gap: 12px; padding: 14px;
-  cursor: pointer; user-select: none;
-}
-.agent-ico {
-  width: 42px; height: 42px; flex-shrink: 0;
-  background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 11px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; transition: .2s;
-}
-.agent-card.running .agent-ico { background: rgba(255,60,0,.12); border-color: #ff3c00; }
-.agent-card.done    .agent-ico { background: rgba(34,197,94,.1);  border-color: rgba(34,197,94,.4); }
-.agent-card.error   .agent-ico { background: rgba(239,68,68,.1);  border-color: rgba(239,68,68,.4); }
-
-.agent-meta { flex: 1; min-width: 0; }
-.agent-num  { font-family: 'Space Mono'; font-size: 9px; color: #444; }
-.agent-name { font-family: 'Bebas Neue'; font-size: 17px; letter-spacing: 1px; line-height: 1.1; }
-.agent-role { font-size: 11px; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-.agent-tag {
-  font-family: 'Space Mono'; font-size: 9px;
-  padding: 4px 8px; border-radius: 20px;
-  border: 1px solid #2a2a2a; color: #444; flex-shrink: 0;
-}
-.agent-card.running .agent-tag { border-color: #ff3c00; color: #ff3c00; }
-.agent-card.done    .agent-tag { border-color: #22c55e; color: #22c55e; }
-.agent-card.error   .agent-tag { border-color: #ef4444; color: #ef4444; }
-
-.agent-body { display: none; padding: 0 14px 14px; border-top: 1px solid #1e1e1e; }
-.agent-body.open { display: block; padding-top: 12px; }
-.agent-text {
-  font-size: 12px; line-height: 1.8; color: #999;
-  white-space: pre-wrap; word-break: break-word;
-}
-.agent-text strong { color: #ffcc00; }
-.agent-text .err-txt { color: #ff8060; }
-
-/* DOTS LOADER */
-.dots { display: flex; gap: 4px; padding: 8px 0; }
-.dots span {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: #ff3c00; animation: dotbounce 1.2s infinite;
-}
-.dots span:nth-child(2) { animation-delay: .2s; }
-.dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes dotbounce { 0%,100%{opacity:.2;transform:translateY(0)} 50%{opacity:1;transform:translateY(-5px)} }
-
-/* OUTPUT BOXES */
-.prompt-box {
-  background: #050e0a; border: 1px solid rgba(34,197,94,.2);
-  border-radius: 12px; padding: 14px; margin-bottom: 8px; display: none;
-}
-.prompt-box.show { display: block; }
-.prompt-box-lbl { font-family: 'Space Mono'; font-size: 9px; color: #22c55e; letter-spacing: 2px; margin-bottom: 8px; }
-.prompt-box-txt {
-  font-family: 'Space Mono'; font-size: 11px; color: #5ef0a0;
-  line-height: 1.6; word-break: break-all; white-space: pre-wrap;
+:root{
+  --bg:#080808;--s1:#101010;--s2:#181818;--s3:#222;
+  --br:#2a2a2a;--br2:#333;
+  --red:#e8390e;--gold:#c9a84c;--grn:#1db954;
+  --blue:#38bdf8;--pur:#a78bfa;
+  --txt:#e8e8e8;--sub:#686868;--sub2:#444;
+  --r:14px;
 }
 
-.leg-box {
-  background: #161616; border: 1px solid rgba(255,204,0,.25);
-  border-radius: 12px; padding: 14px; margin-bottom: 8px; display: none;
+/* ── HEADER ── */
+.hdr{
+  position:sticky;top:0;z-index:300;
+  background:rgba(8,8,8,.97);border-bottom:1px solid var(--br);
+  backdrop-filter:blur(20px);padding:0 18px;height:54px;
+  display:flex;align-items:center;justify-content:space-between;
 }
-.leg-box.show { display: block; }
-.leg-box-lbl { font-family: 'Space Mono'; font-size: 9px; color: #ffcc00; letter-spacing: 2px; margin-bottom: 8px; }
-.leg-box-txt { font-size: 13px; line-height: 1.85; color: #ddd; white-space: pre-wrap; word-break: break-word; }
+.logo{font-family:'Syne';font-weight:800;font-size:17px;letter-spacing:5px;text-transform:uppercase}
+.logo em{color:var(--red);font-style:normal}
+.hbadge{
+  font-family:'Space Mono';font-size:9px;color:var(--grn);
+  border:1px solid rgba(29,185,84,.3);border-radius:20px;
+  padding:4px 10px;display:flex;align-items:center;gap:5px;
+}
+.hbadge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--grn);animation:bl 2s infinite;flex-shrink:0}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.1}}
 
-.collapsible {
-  background: #161616; border: 1px solid #242424;
-  border-radius: 12px; margin-bottom: 8px; overflow: hidden;
-}
-.coll-hd {
-  padding: 13px 14px; display: flex; align-items: center;
-  justify-content: space-between; cursor: pointer;
-}
-.coll-hd:active { background: #1e1e1e; }
-.coll-title { font-family: 'Bebas Neue'; font-size: 14px; letter-spacing: 1px; }
-.coll-body {
-  display: none; padding: 0 14px 14px;
-  font-size: 12px; line-height: 1.8; color: #999;
-  white-space: pre-wrap; word-break: break-word;
-  border-top: 1px solid #1e1e1e;
-}
-.coll-body.open { display: block; padding-top: 12px; }
-.coll-body strong { color: #ffcc00; }
+/* ── PAGE ── */
+.pg{padding:16px 14px 80px;max-width:560px;margin:0 auto}
 
-/* COPY BTN */
-.copy-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  margin-top: 10px; background: #1e1e1e;
-  border: 1px solid #2a2a2a; color: #666;
-  padding: 7px 13px; border-radius: 8px;
-  font-size: 12px; cursor: pointer;
-}
-.copy-btn:active { background: #2a2a2a; }
+/* ── BOX ── */
+.box{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:18px;margin-bottom:10px}
+.box-lbl{font-family:'Space Mono';font-size:9px;letter-spacing:3px;color:var(--red);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.box-lbl::after{content:'';flex:1;height:1px;background:var(--br)}
 
-/* MODAL */
-.modal {
-  position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,.92); backdrop-filter: blur(10px);
-  display: none; flex-direction: column;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-  padding: 14px 14px 60px;
-}
-.modal.open { display: flex; }
-.modal-box {
-  background: #111; border: 1px solid #2a2a2a; border-radius: 18px;
-  overflow: hidden; width: 100%; max-width: 520px; margin: auto;
-}
-.modal-hd {
-  padding: 15px 16px; border-bottom: 1px solid #1e1e1e;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.modal-title { font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 2px; }
-.modal-title em { color: #a855f7; font-style: normal; }
-.modal-close {
-  width: 32px; height: 32px; border-radius: 9px;
-  border: 1px solid #2a2a2a; background: transparent;
-  color: #666; font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.modal-content { padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+/* ── KEY ── */
+.ks{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:11px;background:var(--s2);font-size:13px;margin-bottom:9px;border:1px solid var(--br);color:var(--sub)}
+.ks.ok{color:var(--grn);border-color:rgba(29,185,84,.2)}
+.ks-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.kr{display:flex;gap:7px}
+.ki{flex:1;min-width:0;background:var(--s2);border:1px solid var(--br);color:var(--txt);padding:12px 13px;border-radius:11px;font-family:'Space Mono';font-size:12px;outline:none;transition:.2s}
+.ki:focus{border-color:rgba(232,57,14,.5)}
+.btn-ks{background:var(--red);color:#fff;border:none;padding:12px 16px;border-radius:11px;font-family:'Syne';font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+.btn-ks:active{opacity:.75}
+.btn-kc{background:var(--s2);border:1px solid var(--br);color:var(--sub);padding:12px 13px;border-radius:11px;font-size:13px;cursor:pointer;display:none}
+.kn{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.6}
+.kn a{color:#5b9cf6;text-decoration:none}
 
-.steps-list { width: 100%; background: #1a1a1a; border-radius: 10px; padding: 10px 12px; }
-.step-item { font-family: 'Space Mono'; font-size: 10px; color: #444; padding: 3px 0; display: flex; align-items: center; gap: 7px; }
-.step-item.active { color: #ffcc00; }
-.step-item.ok  { color: #22c55e; }
-.step-item.err { color: #ef4444; }
+/* ── FIELDS ── */
+.f{margin-bottom:11px}
+.f:last-child{margin-bottom:0}
+.lbl{display:block;font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.inp,.ta{display:block;width:100%;background:var(--s2);border:1px solid var(--br);color:var(--txt);padding:12px 13px;border-radius:11px;font-family:'DM Sans';font-size:15px;outline:none;transition:.2s;appearance:none}
+.inp:focus,.ta:focus{border-color:rgba(232,57,14,.5)}
+.ta{resize:vertical;min-height:80px;line-height:1.55}
+.sel-w{position:relative}
+.sel-w::after{content:'▾';position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--sub);pointer-events:none}
+select.inp{padding-right:34px;-webkit-appearance:none;cursor:pointer}
+select.inp option{background:#111}
 
-.card-preview-wrap { width: 100%; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.8); }
-.card-preview-ratio { width: 100%; position: relative; }
-.card-preview-inner { position: absolute; inset: 0; overflow: hidden; }
+/* ── FORMAT PICKER ── */
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.fc{background:var(--s2);border:1.5px solid var(--br);border-radius:12px;padding:12px 6px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;transition:.2s}
+.fc.on{border-color:var(--red);background:rgba(232,57,14,.07)}
+.fc-th{background:#1e1e1e;border:1.5px solid #333;border-radius:3px;transition:.2s}
+.fc.on .fc-th{border-color:var(--red)}
+.fc-nm{font-family:'Syne';font-weight:700;font-size:12px;color:var(--sub);letter-spacing:1px}
+.fc-sz{font-family:'Space Mono';font-size:8px;color:#444}
+.fc.on .fc-nm{color:var(--red)}
 
-.preview-spinner {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,.85);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 12px; z-index: 5; border-radius: 12px;
+/* ── LAUNCH ── */
+.btn-go{width:100%;padding:17px;margin-bottom:10px;background:var(--red);color:#fff;border:none;border-radius:14px;font-family:'Syne';font-weight:800;font-size:18px;letter-spacing:3px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-go:active{opacity:.85;transform:scale(.98)}
+.btn-go:disabled{background:#1a1a1a;color:#333;cursor:not-allowed;transform:none;opacity:1}
+
+/* ── PROGRESS ── */
+.prog{display:none;margin-bottom:10px}
+.prog.on{display:block}
+.prog-track{height:2px;background:var(--s3);border-radius:1px;overflow:hidden;margin-bottom:6px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));width:0%;transition:width .5s}
+.prog-info{display:flex;justify-content:space-between;font-family:'Space Mono';font-size:10px;color:var(--sub)}
+
+/* ── DEPARTMENT ── */
+.dept{margin-bottom:10px}
+.dept-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px 10px;
 }
-.preview-spinner.hidden { display: none; }
-.spin-ring {
-  width: 40px; height: 40px; border-radius: 50%;
-  border: 3px solid #2a2a2a; border-top-color: #a855f7;
-  animation: spinring .9s linear infinite;
+.dept-line{flex:1;height:1px;background:var(--br)}
+.dept-name{
+  font-family:'Space Mono';font-size:9px;letter-spacing:2px;
+  color:var(--sub2);white-space:nowrap;
 }
-@keyframes spinring { to { transform: rotate(360deg); } }
-.spin-txt { font-family: 'Space Mono'; font-size: 10px; color: #a855f7; letter-spacing: 1px; text-align: center; }
-
-.modal-status { font-family: 'Space Mono'; font-size: 11px; color: #555; text-align: center; width: 100%; }
-.modal-status.ok  { color: #22c55e; }
-.modal-status.err { color: #ef4444; }
-
-.btn-download {
-  width: 100%; padding: 16px;
-  background: linear-gradient(135deg, #6d28d9, #a855f7);
-  color: #fff; border: none; border-radius: 14px;
-  font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 3px;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: opacity .15s;
+.dept-badge{
+  font-family:'Space Mono';font-size:8px;padding:3px 8px;
+  border-radius:5px;border:1px solid var(--br);color:var(--sub2);
 }
-.btn-download:active { opacity: .85; }
-.btn-download:disabled { background: #222; color: #444; cursor: not-allowed; opacity: 1; }
+.dept-badge.done{border-color:rgba(29,185,84,.4);color:var(--grn);background:rgba(29,185,84,.06)}
 
-/* HIDDEN RENDER */
-#RENDER_TARGET {
-  position: fixed; left: -19999px; top: 0;
-  z-index: -1; overflow: hidden; pointer-events: none;
-}
+/* ── AGENT CARD ── */
+.ag{background:var(--s1);border:1px solid var(--br);border-radius:12px;margin-bottom:6px;overflow:hidden;transition:border-color .3s}
+.ag.run{border-color:var(--red)}
+.ag.done{border-color:rgba(29,185,84,.35)}
+.ag.refine{border-color:var(--gold)}
 
-/* TOAST */
-.toast {
-  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-  background: #1e1e1e; color: #f0f0f0;
-  padding: 11px 20px; border-radius: 20px;
-  font-size: 13px; z-index: 9999;
-  border: 1px solid #333; pointer-events: none;
-  white-space: nowrap; max-width: 90vw;
-  animation: toastanim .2s ease;
+/* Role stripe */
+.ag-stripe{height:2px;width:100%}
+.ag.creator .ag-stripe{background:linear-gradient(90deg,var(--blue),transparent)}
+.ag.reviewer .ag-stripe{background:linear-gradient(90deg,var(--gold),transparent)}
+
+.ag-top{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;user-select:none}
+.ag-ico{width:40px;height:40px;border-radius:11px;flex-shrink:0;background:var(--s2);border:1px solid var(--br);display:flex;align-items:center;justify-content:center;font-size:18px;transition:.2s}
+.ag.run .ag-ico{background:rgba(232,57,14,.1);border-color:var(--red)}
+.ag.done .ag-ico{background:rgba(29,185,84,.07);border-color:rgba(29,185,84,.3)}
+.ag.refine .ag-ico{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.4)}
+.ag-meta{flex:1;min-width:0}
+.ag-role-tag{
+  font-family:'Space Mono';font-size:8px;letter-spacing:1px;
+  padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:3px;
 }
-@keyframes toastanim { from { opacity:0; transform: translate(-50%,8px); } to { opacity:1; transform:translateX(-50%); } }
+.ag.creator .ag-role-tag{background:rgba(56,189,248,.1);color:var(--blue);border:1px solid rgba(56,189,248,.2)}
+.ag.reviewer .ag-role-tag{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
+.ag-num{font-family:'Space Mono';font-size:8px;color:var(--sub2)}
+.ag-name{font-family:'Syne';font-weight:700;font-size:15px;line-height:1.15}
+.ag-desc{font-size:11px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-tag{font-family:'Space Mono';font-size:9px;flex-shrink:0;padding:4px 8px;border-radius:7px;border:1px solid var(--br);color:var(--sub2)}
+.ag.run .ag-tag{border-color:var(--red);color:var(--red)}
+.ag.done .ag-tag{border-color:var(--grn);color:var(--grn)}
+.ag.refine .ag-tag{border-color:var(--gold);color:var(--gold)}
+.ag-body{display:none;padding:0 14px 14px;border-top:1px solid var(--br)}
+.ag-body.open{display:block;padding-top:12px}
+.ag-txt{font-size:12px;line-height:1.85;color:#888;white-space:pre-wrap;word-break:break-word}
+.ag-txt strong{color:var(--gold)}
+.ag-txt .approved{color:var(--grn);font-family:'Space Mono';font-size:10px}
+.ag-txt .refined{color:var(--gold);font-family:'Space Mono';font-size:10px}
+
+/* dots */
+.dots{display:flex;gap:4px;padding:8px 0}
+.dots span{width:5px;height:5px;border-radius:50%;background:var(--red);animation:dt 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dt{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-5px)}}
+
+/* ── OUTPUT BOXES ── */
+.out-copy{background:var(--s1);border:1px solid rgba(201,168,76,.25);border-radius:14px;padding:18px;margin-bottom:10px;display:none}
+.out-copy.on{display:block}
+.out-lbl{font-family:'Space Mono';font-size:9px;letter-spacing:2px;margin-bottom:12px}
+.out-lbl.gold{color:var(--gold)}
+.out-lbl.grn{color:var(--grn)}
+.out-titulo{font-family:'Syne';font-weight:800;font-size:24px;line-height:1.15;color:var(--txt);margin-bottom:7px}
+.out-sub{font-size:14px;line-height:1.6;color:#bbb;margin-bottom:14px}
+.leg-sep{border-top:1px solid var(--br);padding-top:14px;margin-top:2px}
+.leg-lbl{font-family:'Space Mono';font-size:9px;color:var(--sub);letter-spacing:2px;margin-bottom:7px}
+.leg-txt{font-size:13px;line-height:1.85;color:#999;white-space:pre-wrap;word-break:break-word}
+
+.out-prompt{background:#050c08;border:1px solid rgba(29,185,84,.2);border-radius:14px;padding:16px;margin-bottom:10px;display:none}
+.out-prompt.on{display:block}
+.out-prompt-txt{font-family:'Space Mono';font-size:11px;color:#4dde8a;line-height:1.65;word-break:break-all;white-space:pre-wrap}
+
+.cp-btn{display:inline-flex;align-items:center;gap:5px;margin-top:11px;background:var(--s2);border:1px solid var(--br);color:var(--sub);padding:7px 13px;border-radius:8px;font-size:12px;cursor:pointer}
+.cp-btn:active{background:var(--s3)}
+
+/* ── ARTE BTN ── */
+.btn-arte{width:100%;padding:17px;margin-bottom:10px;background:linear-gradient(135deg,#1a0a3d,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:14px;font-family:'Syne';font-weight:800;font-size:18px;letter-spacing:2px;cursor:pointer;display:none;align-items:center;justify-content:center;gap:10px;text-transform:uppercase}
+.btn-arte.on{display:flex}
+.btn-arte:active{opacity:.85;transform:scale(.98)}
+.btn-arte:disabled{background:#1a1a1a;color:#333;cursor:not-allowed;transform:none;opacity:1}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.95);backdrop-filter:blur(16px);display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 60px}
+.modal.open{display:flex}
+.modal-inner{background:#0e0e0e;border:1px solid var(--br);border-radius:20px;overflow:hidden;width:100%;max-width:560px;margin:auto}
+.modal-hdr{padding:16px 18px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.modal-t{font-family:'Syne';font-weight:800;font-size:19px;letter-spacing:1px}
+.modal-t em{color:var(--pur);font-style:normal}
+.modal-x{width:32px;height:32px;border-radius:9px;border:1px solid var(--br);background:transparent;color:var(--sub);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:16px;display:flex;flex-direction:column;gap:13px;align-items:center}
+
+.steps-log{width:100%;background:var(--s2);border-radius:11px;padding:11px 13px}
+.step-item{font-family:'Space Mono';font-size:10px;color:var(--sub2);padding:3px 0;display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.step-item.active{color:var(--gold)}
+.step-item.ok{color:var(--grn)}
+.step-item.err{color:var(--red)}
+
+.prev-wrap{width:100%;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.04)}
+.prev-ratio{width:100%;position:relative}
+.prev-inner{position:absolute;inset:0;overflow:hidden}
+.prev-spin{position:absolute;inset:0;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;z-index:5;border-radius:14px}
+.prev-spin.gone{display:none}
+.spinner{width:40px;height:40px;border-radius:50%;border:3px solid #1e1e1e;border-top-color:var(--pur);animation:sp .85s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.spin-txt{font-family:'Space Mono';font-size:10px;color:var(--pur);letter-spacing:1px;text-align:center;padding:0 20px}
+
+.modal-status{font-family:'Space Mono';font-size:11px;color:var(--sub);text-align:center;width:100%;line-height:1.6}
+.modal-status.ok{color:var(--grn)}
+.modal-status.err{color:var(--red)}
+
+.btn-dl{width:100%;padding:16px;background:linear-gradient(135deg,#4c1d95,#7c3aed,#a855f7);color:#fff;border:none;border-radius:13px;font-family:'Syne';font-weight:800;font-size:17px;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-transform:uppercase;transition:opacity .15s}
+.btn-dl:active{opacity:.85}
+.btn-dl:disabled{background:#1a1a1a;color:#333;cursor:not-allowed;opacity:1}
+
+/* hidden */
+#RT{position:fixed;left:-39999px;top:0;z-index:-100;overflow:hidden;pointer-events:none}
+
+/* toast */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#e8e8e8;padding:11px 20px;border-radius:22px;font-size:13px;z-index:9999;white-space:nowrap;border:1px solid #333;pointer-events:none;animation:tst .2s ease}
+@keyframes tst{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translateX(-50%)}}
+
+.err-box{background:rgba(232,57,14,.08);border:1px solid rgba(232,57,14,.25);border-radius:11px;padding:13px;font-size:13px;color:#ff8060;line-height:1.65;margin-bottom:10px;display:none}
+.err-box.on{display:block}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="hdr">
-  <div class="logo">SQU<b>AD</b></div>
-  <div class="badge-live" id="modelBadge">GEMINI AUTO</div>
+  <div class="logo">SQU<em>AD</em> DUPLO</div>
+  <div class="hbadge" id="mBadge">GEMINI AUTO</div>
 </div>
 
-<div class="page">
+<div class="pg">
 
-  <!-- API KEY -->
+  <!-- KEY -->
   <div class="box">
-    <div class="box-title">// Gemini API Key</div>
-    <div class="key-status no-key" id="keyStatus">
-      <span id="keyStatusIcon">○</span>
-      <span id="keyStatusMsg">Nenhuma key configurada</span>
+    <div class="box-lbl">// Gemini API Key</div>
+    <div class="ks" id="kSt"><span class="ks-dot"></span><span id="kMsg">Nenhuma key salva</span></div>
+    <div class="kr">
+      <input class="ki" id="kInp" type="password" placeholder="Cole sua key Gemini (AIza...)"/>
+      <button class="btn-ks" onclick="saveKey()">Salvar</button>
+      <button class="btn-kc" id="kClear" onclick="clearKey()">✕</button>
     </div>
-    <div class="key-row">
-      <input class="key-inp" id="keyInput" type="password" placeholder="Cole aqui sua key do Google AI Studio (AIza...)"/>
-      <button class="key-btn" onclick="SQUAD.saveKey()">Salvar</button>
-      <button class="key-clear" id="keyClear" onclick="SQUAD.clearKey()" style="display:none">✕</button>
-    </div>
-    <div class="key-hint">
-      Grátis em <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a><br>
-      <span style="color:#22c55e">✓ Key salva no navegador — não precisa informar toda vez.</span>
-    </div>
+    <div class="kn">Grátis em <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> · <strong>Key salva no navegador.</strong></div>
   </div>
 
   <!-- BRIEF -->
   <div class="box">
-    <div class="box-title">// Brief Criativo</div>
+    <div class="box-lbl">// Brief da empresa</div>
+
     <div class="f">
-      <label>Marca / Cliente</label>
-      <input class="inp" id="fBrand" type="text" placeholder="Ex: Studio Fit, Café Noir..."/>
+      <label class="lbl">Nome da empresa</label>
+      <input class="inp" id="fNome" type="text" placeholder="Ex: Studio Fit, Café Noir, TechVox..."/>
     </div>
     <div class="f">
-      <label>Nicho</label>
+      <label class="lbl">Nicho / Segmento</label>
+      <input class="inp" id="fNicho" type="text" placeholder="Digite o nicho específico da empresa..."/>
+    </div>
+    <div class="f">
+      <label class="lbl">Sobre a empresa</label>
+      <textarea class="ta" id="fEmpresa" placeholder="Descreva: o que faz, público-alvo, diferenciais, valores, produtos ou serviços principais..."></textarea>
+    </div>
+    <div class="f">
+      <label class="lbl">O que abordar neste post?</label>
+      <textarea class="ta" id="fAbordagem" style="min-height:66px" placeholder="Ex: lançamento, promoção, dica, autoridade, bastidores, depoimento, oferta..."></textarea>
+    </div>
+    <div class="f">
+      <label class="lbl">Tom de voz</label>
       <div class="sel-w">
-        <select class="sel" id="fNiche">
-          <option value="">Selecione...</option>
-          <option>Moda e Lifestyle</option>
-          <option>Food e Gastronomia</option>
-          <option>Saude e Fitness</option>
-          <option>Negocios e Empreendedorismo</option>
-          <option>E-commerce e Produto</option>
-          <option>Beleza e Estetica</option>
-          <option>Tech e Startups</option>
-          <option>Imoveis</option>
-          <option>Educacao e Cursos</option>
-          <option>Financas e Investimentos</option>
-        </select>
-      </div>
-    </div>
-    <div class="f">
-      <label>Objetivo</label>
-      <div class="sel-w">
-        <select class="sel" id="fObj">
-          <option value="">Selecione...</option>
-          <option>Engajamento maximo</option>
-          <option>Conversao e Vendas</option>
-          <option>Awareness e Branding</option>
-          <option>Lancamento de produto</option>
-          <option>Autoridade e Educacao</option>
-          <option>Oferta e Promocao</option>
-        </select>
-      </div>
-    </div>
-    <div class="f">
-      <label>Produto / Serviço / Tema *</label>
-      <textarea class="ta" id="fDesc" placeholder="Descreva o que será comunicado: produto, serviço, oferta, diferencial, público..."></textarea>
-    </div>
-    <div class="f">
-      <label>Tom Visual</label>
-      <div class="sel-w">
-        <select class="sel" id="fTone">
-          <option value="">Selecione...</option>
-          <option>Premium e Luxo</option>
-          <option>Moderno e Bold</option>
+        <select class="inp" id="fTom">
+          <option value="">Selecione o tom...</option>
+          <option>Premium e Sofisticado</option>
+          <option>Moderno e Direto</option>
           <option>Inspirador e Emocional</option>
-          <option>Divertido e Jovem</option>
-          <option>Clean e Organico</option>
-          <option>Dark e Cinematografico</option>
-          <option>Corporativo e Profissional</option>
+          <option>Divertido e Descontraído</option>
+          <option>Autoritário e Educativo</option>
+          <option>Urgente e Persuasivo</option>
+          <option>Minimalista e Clean</option>
+          <option>Dark e Cinematográfico</option>
         </select>
       </div>
     </div>
     <div class="f">
-      <label>Público-Alvo (opcional)</label>
-      <input class="inp" id="fAud" type="text" placeholder="Ex: Mulheres 28-42, classe B..."/>
-    </div>
-  </div>
-
-  <!-- FORMAT -->
-  <div class="box">
-    <div class="box-title">// Formato do Card</div>
-    <div class="fmt-grid">
-      <div class="fmt-opt on" id="fmt0" onclick="SQUAD.selFmt(0,1080,1080,'Feed 1:1')">
-        <div class="fmt-thumb" style="width:34px;height:34px"></div>
-        <div class="fmt-name">FEED</div>
-        <div class="fmt-size">1080×1080</div>
-      </div>
-      <div class="fmt-opt" id="fmt1" onclick="SQUAD.selFmt(1,1080,1350,'Portrait 4:5')">
-        <div class="fmt-thumb" style="width:26px;height:34px"></div>
-        <div class="fmt-name">PORTRAIT</div>
-        <div class="fmt-size">1080×1350</div>
-      </div>
-      <div class="fmt-opt" id="fmt2" onclick="SQUAD.selFmt(2,1080,1920,'Stories 9:16')">
-        <div class="fmt-thumb" style="width:18px;height:34px"></div>
-        <div class="fmt-name">STORIES</div>
-        <div class="fmt-size">1080×1920</div>
+      <label class="lbl">Formato do card</label>
+      <div class="fmt-grid">
+        <div class="fc on" id="fc0" onclick="selFmt(0,1080,1080,'Feed 1:1')">
+          <div class="fc-th" style="width:34px;height:34px"></div>
+          <div class="fc-nm">FEED</div><div class="fc-sz">1080×1080</div>
+        </div>
+        <div class="fc" id="fc1" onclick="selFmt(1,1080,1350,'Portrait 4:5')">
+          <div class="fc-th" style="width:26px;height:34px"></div>
+          <div class="fc-nm">PORTRAIT</div><div class="fc-sz">1080×1350</div>
+        </div>
+        <div class="fc" id="fc2" onclick="selFmt(2,1080,1920,'Stories 9:16')">
+          <div class="fc-th" style="width:18px;height:34px"></div>
+          <div class="fc-nm">STORIES</div><div class="fc-sz">1080×1920</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- LAUNCH -->
-  <button class="btn-go" id="btnGo" onclick="SQUAD.launch()">▶ ACIONAR SQUAD</button>
+  <div class="err-box" id="errBox"></div>
 
-  <!-- PROGRESS -->
-  <div class="prog-wrap" id="progWrap">
+  <button class="btn-go" id="btnGo" onclick="iniciar()">▶ ACIONAR SQUADS</button>
+
+  <div class="prog" id="progWrap">
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
-    <div class="prog-info">
-      <span id="progLabel">Iniciando...</span>
-      <span id="progPct">0%</span>
-    </div>
+    <div class="prog-info"><span id="progLbl">Iniciando...</span><span id="progPct">0%</span></div>
   </div>
 
-  <!-- AGENTS -->
-  <div id="agentList"></div>
+  <!-- DEPT 1: ESTRATÉGIA -->
+  <div class="dept" id="dept0">
+    <div class="dept-header">
+      <div class="dept-line"></div>
+      <div class="dept-name">DEPARTAMENTO 01 — ESTRATÉGIA</div>
+      <div class="dept-badge" id="dept0badge">AGUARDANDO</div>
+      <div class="dept-line"></div>
+    </div>
+    <div id="ag0wrap"></div>
+    <div id="ag1wrap"></div>
+  </div>
+
+  <!-- DEPT 2: COPY -->
+  <div class="dept" id="dept1">
+    <div class="dept-header">
+      <div class="dept-line"></div>
+      <div class="dept-name">DEPARTAMENTO 02 — COPY</div>
+      <div class="dept-badge" id="dept1badge">AGUARDANDO</div>
+      <div class="dept-line"></div>
+    </div>
+    <div id="ag2wrap"></div>
+    <div id="ag3wrap"></div>
+  </div>
+
+  <!-- DEPT 3: VISUAL -->
+  <div class="dept" id="dept2">
+    <div class="dept-header">
+      <div class="dept-line"></div>
+      <div class="dept-name">DEPARTAMENTO 03 — DIREÇÃO VISUAL</div>
+      <div class="dept-badge" id="dept2badge">AGUARDANDO</div>
+      <div class="dept-line"></div>
+    </div>
+    <div id="ag4wrap"></div>
+    <div id="ag5wrap"></div>
+  </div>
+
+  <!-- COPY OUTPUT -->
+  <div class="out-copy" id="outCopy">
+    <div class="out-lbl gold">// COPY APROVADA PELO SQUAD</div>
+    <div class="out-titulo" id="outTitulo"></div>
+    <div class="out-sub" id="outSub"></div>
+    <div class="leg-sep">
+      <div class="leg-lbl">LEGENDA INSTAGRAM</div>
+      <div class="leg-txt" id="outLeg"></div>
+      <button class="cp-btn" onclick="cp('outLeg',this)">⎘ Copiar legenda</button>
+    </div>
+  </div>
 
   <!-- PROMPT OUTPUT -->
-  <div class="prompt-box" id="promptBox">
-    <div class="prompt-box-lbl">PROMPT — MIDJOURNEY / POLLINATIONS AI</div>
-    <div class="prompt-box-txt" id="promptTxt"></div>
-    <button class="copy-btn" onclick="SQUAD.copyEl('promptTxt',this)">⎘ Copiar prompt</button>
+  <div class="out-prompt" id="outPrompt">
+    <div class="out-lbl grn">// PROMPT VISUAL APROVADO</div>
+    <div class="out-prompt-txt" id="outPromptTxt"></div>
+    <button class="cp-btn" onclick="cp('outPromptTxt',this)">⎘ Copiar prompt</button>
   </div>
 
-  <!-- LEGENDA OUTPUT -->
-  <div class="leg-box" id="legendaBox">
-    <div class="leg-box-lbl">LEGENDA INSTAGRAM</div>
-    <div class="leg-box-txt" id="legendaTxt"></div>
-    <button class="copy-btn" onclick="SQUAD.copyEl('legendaTxt',this)">⎘ Copiar legenda</button>
-  </div>
-
-  <!-- EXTRA COLLAPSIBLE OUTPUTS -->
-  <div id="extraOutputs"></div>
-
-  <!-- ARTE FINAL -->
-  <button class="btn-arte" id="btnArte" onclick="SQUAD.openModal()">🎨 GERAR ARTE FINAL</button>
+  <button class="btn-arte" id="btnArte" onclick="abrirModal()">🎨 GERAR ARTE FINAL</button>
 
 </div>
 
 <!-- MODAL -->
 <div class="modal" id="modal">
-  <div class="modal-box">
-    <div class="modal-hd">
-      <div class="modal-title">ARTE <em>FINAL</em></div>
-      <button class="modal-close" onclick="SQUAD.closeModal()">✕</button>
+  <div class="modal-inner">
+    <div class="modal-hdr">
+      <div class="modal-t">ARTE <em>FINAL</em></div>
+      <button class="modal-x" onclick="fecharModal()">✕</button>
     </div>
-    <div class="modal-content">
-      <div class="steps-list" id="stepsList"></div>
-      <div class="modal-status" id="modalStatus">Aguardando...</div>
-      <div class="card-preview-wrap" id="previewWrap">
-        <div class="preview-spinner" id="previewSpinner">
-          <div class="spin-ring"></div>
+    <div class="modal-body">
+      <div class="steps-log" id="stLog"></div>
+      <div class="modal-status" id="mStatus">Aguardando...</div>
+      <div class="prev-wrap" id="prevWrap">
+        <div class="prev-spin" id="prevSpin">
+          <div class="spinner"></div>
           <div class="spin-txt" id="spinTxt">GERANDO IMAGEM...</div>
         </div>
-        <div class="card-preview-ratio" id="previewRatio">
-          <div class="card-preview-inner" id="previewInner"></div>
+        <div class="prev-ratio" id="prevRatio">
+          <div class="prev-inner" id="prevInner"></div>
         </div>
       </div>
-      <button class="btn-download" id="btnDownload" onclick="SQUAD.download()" disabled>⬇ BAIXAR PNG</button>
+      <button class="btn-dl" id="btnDl" onclick="baixar()" disabled>⬇ BAIXAR PNG</button>
     </div>
   </div>
 </div>
 
-<!-- HIDDEN FULL-RES RENDER TARGET -->
-<div id="RENDER_TARGET"></div>
+<div id="RT"></div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// SQUAD — All functions on global SQUAD object
-// No IIFE wrapper — prevents scope issues with onclick
-// ═══════════════════════════════════════════════════
-var SQUAD = {};
+(function(){
+'use strict';
 
-// ── STATE ──────────────────────────────────────────
-var _key    = '';
-var _brief  = {};
-var _outs   = [];
-var _fmt    = { w:1080, h:1080, label:'Feed 1:1' };
-var _busy   = false;
-var _mj     = '';
-var _artSteps = [];
+/* ══════════════════════════
+   STATE
+══════════════════════════ */
+var KEY='', MODELO=null, BUSY=false;
+var FMT={w:1080,h:1080,label:'Feed 1:1'};
+var D={}; // dados da empresa
+var R={}; // resultados de cada agente: R[id] = texto
 
-var LS_KEY = 'squad_gkey_v1';
+/* ══════════════════════════
+   GEMINI — fallback auto
+══════════════════════════ */
+var MODELS=['gemini-2.0-flash-lite','gemini-1.5-flash','gemini-1.5-flash-8b','gemini-1.5-pro'];
 
-// ── localStorage PERSISTENCE ───────────────────────
-SQUAD.loadKey = function() {
-  try {
-    var k = localStorage.getItem(LS_KEY) || '';
-    if (k && k.length > 10) {
-      _key = k;
-      _updateKeyUI(true);
-    }
-  } catch(e) {}
-};
-
-SQUAD.saveKey = function() {
-  var inp = document.getElementById('keyInput');
-  var v = (inp.value || '').trim();
-  if (!v) { SQUAD.toast('⚠ Cole a API Key primeiro!'); inp.focus(); return; }
-  if (!v.startsWith('AIza')) {
-    inp.style.borderColor = '#ef4444';
-    setTimeout(function(){ inp.style.borderColor = ''; }, 2000);
-    SQUAD.toast('⚠ Key inválida — deve começar com AIza');
-    return;
-  }
-  _key = v;
-  try { localStorage.setItem(LS_KEY, v); } catch(e) {}
-  inp.value = '';
-  _updateKeyUI(true);
-  SQUAD.toast('✓ Key salva no navegador!');
-};
-
-SQUAD.clearKey = function() {
-  _key = '';
-  try { localStorage.removeItem(LS_KEY); } catch(e) {}
-  _updateKeyUI(false);
-  SQUAD.toast('Key removida');
-};
-
-function _updateKeyUI(has) {
-  var st = document.getElementById('keyStatus');
-  var icon = document.getElementById('keyStatusIcon');
-  var msg  = document.getElementById('keyStatusMsg');
-  var clrBtn = document.getElementById('keyClear');
-  if (has) {
-    st.className = 'key-status has-key';
-    icon.textContent = '✓';
-    msg.textContent = 'Key ativa: ' + _key.substring(0,12) + '...';
-    clrBtn.style.display = 'block';
-  } else {
-    st.className = 'key-status no-key';
-    icon.textContent = '○';
-    msg.textContent = 'Nenhuma key configurada';
-    clrBtn.style.display = 'none';
-  }
+function gemini(prompt,cb){
+  if(!KEY){cb('Key não configurada.',null);return;}
+  if(MODELO){_req(MODELO,prompt,cb);}else{_chain(0,prompt,cb);}
+}
+function _chain(i,prompt,cb){
+  if(i>=MODELS.length){cb('Nenhum modelo disponível para esta key.',null);return;}
+  _req(MODELS[i],prompt,function(err,res){
+    if(!err){
+      if(MODELO!==MODELS[i]){
+        MODELO=MODELS[i];
+        var b=document.getElementById('mBadge');
+        if(b)b.textContent=MODELO.replace('gemini-','').replace('-',' ').toUpperCase();
+        toast('Modelo: '+MODELO);
+      }
+      cb(null,res);
+    } else if(/404|NOT_FOUND|no longer|unavailable/i.test(err)){
+      _chain(i+1,prompt,cb);
+    } else {cb(err,null);}
+  });
+}
+function _req(model,prompt,cb){
+  var url='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+KEY;
+  var body=JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:1600,temperature:0.87}});
+  var x=new XMLHttpRequest();
+  x.open('POST',url,true);x.setRequestHeader('Content-Type','application/json');x.timeout=90000;
+  x.onreadystatechange=function(){
+    if(x.readyState!==4)return;
+    if(x.status===0){cb('Sem conexão.',null);return;}
+    var d;try{d=JSON.parse(x.responseText);}catch(e){cb('Resposta inválida.',null);return;}
+    if(x.status===404){cb('404: '+(d.error&&d.error.message||'NOT_FOUND'),null);return;}
+    if(x.status===400){cb('Key inválida: '+(d.error&&d.error.message||'400'),null);return;}
+    if(x.status===403){cb('Sem permissão (403).',null);return;}
+    if(x.status===429){cb('Limite atingido. Aguarde 1 min.',null);return;}
+    if(x.status!==200){cb('Erro '+(d.error&&d.error.message||x.status),null);return;}
+    if(d.error){cb('Gemini: '+d.error.message,null);return;}
+    var t='';try{t=d.candidates[0].content.parts[0].text;}catch(e){cb('Resposta vazia.',null);return;}
+    cb(null,t);
+  };
+  x.ontimeout=function(){cb('Timeout.',null);};x.onerror=function(){cb('Erro de rede.',null);};
+  x.send(body);
 }
 
-// ── FORMAT ─────────────────────────────────────────
-SQUAD.selFmt = function(idx, w, h, label) {
-  [0,1,2].forEach(function(i){ document.getElementById('fmt'+i).classList.remove('on'); });
-  document.getElementById('fmt'+idx).classList.add('on');
-  _fmt = { w:w, h:h, label:label };
+/* ══════════════════════════
+   KEY
+══════════════════════════ */
+var LS='squad2_key';
+function loadKey(){try{var k=localStorage.getItem(LS);if(k&&k.length>10){KEY=k;updKeyUI(true);}}catch(e){}}
+window.saveKey=function(){
+  var v=document.getElementById('kInp').value.trim();
+  if(!v){toast('Cole a API Key!');return;}
+  if(!v.startsWith('AIza')){toast('⚠ Key inválida (deve começar com AIza)');return;}
+  KEY=v;MODELO=null;
+  try{localStorage.setItem(LS,v);}catch(e){}
+  document.getElementById('kInp').value='';
+  updKeyUI(true);toast('✓ Key salva!');
+};
+window.clearKey=function(){
+  KEY='';MODELO=null;
+  try{localStorage.removeItem(LS);}catch(e){}
+  updKeyUI(false);toast('Key removida');
+};
+function updKeyUI(ok){
+  var s=document.getElementById('kSt'),m=document.getElementById('kMsg'),c=document.getElementById('kClear');
+  s.className='ks'+(ok?' ok':'');m.textContent=ok?'Key ativa: '+KEY.substring(0,12)+'...':'Nenhuma key salva';
+  c.style.display=ok?'block':'none';
+}
+
+/* ══════════════════════════
+   FORMAT
+══════════════════════════ */
+window.selFmt=function(i,w,h,label){
+  [0,1,2].forEach(function(x){document.getElementById('fc'+x).classList.remove('on');});
+  document.getElementById('fc'+i).classList.add('on');FMT={w:w,h:h,label:label};
 };
 
-// ── AGENTS DEFINITION ──────────────────────────────
-var _agents = [
+/* ══════════════════════════
+   AGENT DEFINITIONS
+   6 agents in 3 departments
+   Each department: [creator, reviewer]
+══════════════════════════ */
+var AGENTS=[
+
+  /* ── DEPT 1: ESTRATÉGIA ── */
   {
-    ico:'🧠', name:'ESTRATEGISTA', role:'Insight, conceito e arquitetura do post',
-    prompt: function() {
-      return 'Você é Estrategista de Conteúdo Sênior especializado em Instagram.\n'
-        + 'Responda em português brasileiro. Use **negrito** nos títulos.\n\n'
-        + 'BRIEF DO CLIENTE:\n'
-        + 'Marca: ' + _brief.brand + '\n'
-        + 'Nicho: ' + _brief.niche + '\n'
-        + 'Objetivo: ' + _brief.obj + '\n'
-        + 'Produto/Tema: ' + _brief.desc + '\n'
-        + 'Tom: ' + _brief.tone + '\n'
-        + 'Público: ' + (_brief.aud || 'Deduzir pelo nicho') + '\n'
-        + 'Formato: ' + _fmt.label + ' (' + _fmt.w + '×' + _fmt.h + 'px)\n\n'
-        + '**DIAGNÓSTICO DO PÚBLICO**\n'
-        + 'Quem é, qual dor, o que deseja, como se comporta no Instagram.\n\n'
-        + '**INSIGHT ESTRATÉGICO**\n'
-        + 'A descoberta não-óbvia que fundamenta este post.\n\n'
-        + '**ÂNGULO CRIATIVO**\n'
-        + 'Por que este ângulo vai funcionar para este objetivo.\n\n'
-        + '**GANCHO CENTRAL**\n'
-        + 'Uma frase que para o scroll.\n\n'
-        + '**ELEMENTOS DO CARD**\n'
-        + 'Badge, headline, subtítulo, CTA, elemento visual de destaque.\n\n'
-        + '**KPIs DE SUCESSO**\n'
-        + 'Métricas que indicam que o post performou.';
+    id:'e1', dept:0, wrap:'ag0wrap',
+    role:'creator', ico:'🧠',
+    name:'ESTRATEGISTA',
+    desc:'Analisa a empresa e cria a premissa central',
+    prompt:function(){
+      return 'Você é o melhor Estrategista de publicidade e marketing do Brasil.\n'+
+      'Analise a empresa e crie UMA PREMISSA CENTRAL PODEROSA para um post no Instagram.\n'+
+      'A premissa é o insight que vai mover toda a criação.\nResponda em português. Use **negrito** nos títulos.\n\n'+
+      '=== EMPRESA ===\nNome: '+D.nome+'\nNicho: '+D.nicho+'\nSobre: '+D.empresa+
+      '\nAbordagem: '+D.abordagem+'\nTom: '+D.tom+'\nFormato: '+FMT.label+'\n\n'+
+      '**ANÁLISE DO PÚBLICO**\nQuem é? Qual dor mais profunda? O que deseja secretamente?\n\n'+
+      '**INSIGHT DE OURO**\nA descoberta não-óbvia sobre este nicho que tornará este post único.\n\n'+
+      '**PREMISSA CENTRAL**\nUMA frase — a grande ideia. Algo que para o scroll.\n'+
+      'Deve ser surpreendente, específica, humana e conectada à dor ou desejo do público.\n\n'+
+      '**ESTRATÉGIA DE IMPACTO**\nPor que esta premissa vai funcionar? Qual gatilho psicológico aciona?\n\n'+
+      '**ELEMENTOS SUGERIDOS PARA O CARD**\nBadge/selo, linha de eyebrow, direção do headline, CTA.';
     }
   },
   {
-    ico:'✍️', name:'COPYWRITER', role:'Textos definitivos que entram no card visual',
-    prompt: function() {
-      return 'Você é Copywriter Sênior de resposta direta para Instagram.\n'
-        + 'No Instagram o texto do card tem 0,3 a 2 segundos para funcionar.\n'
-        + 'Responda em português brasileiro.\n\n'
-        + 'ESTRATÉGIA DO AGENTE ANTERIOR:\n'
-        + (_outs[0] || 'N/A').substring(0, 500) + '\n\n'
-        + 'Marca: ' + _brief.brand + ' | Tom: ' + _brief.tone + '\n\n'
-        + 'RETORNE EXATAMENTE NESTE FORMATO:\n\n'
-        + '**BADGE**\n'
-        + '[2-3 palavras MAIÚSCULO. Ex: NOVO, EXCLUSIVO. Deixe vazio se não fizer sentido]\n\n'
-        + '**EYEBROW**\n'
-        + '[linha acima do headline, máx 5 palavras]\n\n'
-        + '**HEADLINE**\n'
-        + '[MAIÚSCULO, máx 5 palavras, irresistível]\n\n'
-        + '**SUBTEXT**\n'
-        + '[complemento, máx 12 palavras]\n\n'
-        + '**CTA**\n'
-        + '[chamada à ação, máx 4 palavras]\n\n'
-        + '**JUSTIFICATIVA**\n'
-        + '[Por que estas escolhas funcionam]';
+    id:'e2', dept:0, wrap:'ag1wrap',
+    role:'reviewer', ico:'🎯',
+    name:'ESTRATEGISTA SÊNIOR',
+    desc:'Analisa, refina e aprova a premissa para seguir',
+    prompt:function(){
+      return 'Você é o Estrategista Sênior mais experiente do mundo — já trabalhou nas maiores agências globais.\n'+
+      'Recebeu a premissa criada pelo Estrategista Junior. Sua missão:\n'+
+      '1. Analisar criticamente o que foi criado\n'+
+      '2. Identificar pontos fracos e oportunidades perdidas\n'+
+      '3. Refinar e elevar a premissa ao nível máximo\n'+
+      '4. Aprovar a versão final para o Copy\nResponda em português.\n\n'+
+      '=== CONTEXTO DA EMPRESA ===\nNome: '+D.nome+' | Nicho: '+D.nicho+' | Tom: '+D.tom+'\n\n'+
+      '=== PREMISSA DO ESTRATEGISTA ===\n'+(R.e1||'').substring(0,700)+'\n\n'+
+      '**ANÁLISE CRÍTICA**\nO que está forte? O que está fraco ou genérico?\n\n'+
+      '**REFINAMENTO**\nA versão melhorada e mais poderosa da premissa.\n'+
+      'Corrija, aprofunde, torne mais específica e emocionalmente conectada.\n\n'+
+      '**PREMISSA FINAL APROVADA**\nA frase definitiva — clara, poderosa, única. UMA frase.\n\n'+
+      '**BRIEFING PARA O COPY**\nInstruções precisas do que o Copywriter deve criar baseado nesta premissa.\n'+
+      'Inclua: direção emocional, gatilhos a usar, o que evitar.';
+    }
+  },
+
+  /* ── DEPT 2: COPY ── */
+  {
+    id:'c1', dept:1, wrap:'ag2wrap',
+    role:'creator', ico:'✍️',
+    name:'COPYWRITER',
+    desc:'Transforma a premissa em título, subtítulo e legenda',
+    prompt:function(){
+      return 'Você é o melhor Copywriter de publicidade do Brasil, especialista em Instagram e resposta direta.\n'+
+      'Pegue a premissa aprovada e crie a copy perfeita para o card visual.\nResponda em português.\n\n'+
+      '=== BRIEFING DO ESTRATEGISTA SÊNIOR ===\n'+(R.e2||'').substring(0,700)+'\n\n'+
+      'Empresa: '+D.nome+' | Tom: '+D.tom+' | Formato: '+FMT.label+'\n\n'+
+      'CRIE EXATAMENTE NESTE FORMATO:\n\n'+
+      '**TITULO**\n[Título principal do card. MAIÚSCULO. Máx 6 palavras. Para o scroll. Irresistível.]\n\n'+
+      '**SUBTITULO**\n[Complementa o título. Máx 14 palavras. Aprofunda sem repetir. Gera desejo ou curiosidade.]\n\n'+
+      '**LEGENDA**\n'+
+      '[Legenda completa para Instagram:\n'+
+      'Linha 1: Hook devastador (antes do "ver mais", máx 125 chars)\n'+
+      'Parágrafos: 3-4 blocos curtos com emojis, storytelling ou benefício direto\n'+
+      'Penúltimo: CTA claro e específico\n'+
+      'Último: 20-25 hashtags relevantes]\n\n'+
+      '**RACIOCÍNIO**\n[Explique os gatilhos psicológicos usados em cada peça]';
     }
   },
   {
-    ico:'📸', name:'DIR. FOTOGRAFIA', role:'Prompt de imagem para Pollinations / Midjourney',
-    prompt: function() {
-      return 'Você é Diretor de Fotografia especializado em prompts para IA generativa.\n'
-        + 'A imagem de fundo do card precisa: impacto visual + área inferior mais limpa para texto.\n'
-        + 'Responda em português. O PROMPT DE IMAGEM deve ser em inglês.\n\n'
-        + 'Nicho: ' + _brief.niche + ' | Tom: ' + _brief.tone + '\n'
-        + 'Formato: ' + _fmt.w + '×' + _fmt.h + 'px\n'
-        + 'Copy do card: ' + (_outs[1] || 'N/A').substring(0, 200) + '\n\n'
-        + '**CONCEITO DA IMAGEM**\n'
-        + 'O que vai mostrar e por que é poderoso para este post.\n\n'
-        + '**ESTILO FOTOGRÁFICO**\n'
-        + 'Fotografia real, CGI, abstrato? Qual referência.\n\n'
-        + '**PROMPT DE IMAGEM**\n'
-        + '[Prompt completo EM INGLÊS: sujeito, ambiente, iluminação, mood, estilo, qualidade. '
-        + 'Área inferior da imagem deve ter menos elementos. '
-        + 'Finalizar com: professional photography, 8k resolution, cinematic lighting, no text, no watermark]\n\n'
-        + '**TRATAMENTO DE COR**\n'
-        + 'Paleta e grading de como conversa com o design.';
+    id:'c2', dept:1, wrap:'ag3wrap',
+    role:'reviewer', ico:'💡',
+    name:'COPY DIRECTOR',
+    desc:'Avalia, refina e aprova o copy para o layout',
+    prompt:function(){
+      return 'Você é o Copy Director — o profissional de copy mais exigente e experiente do mundo.\n'+
+      'Avaliou campanhas para Nike, Apple, Natura, Nubank. Tem olho clínico para o que funciona de verdade.\n'+
+      'Sua missão: analisar o copy criado, refinar cada peça e entregar a versão final aprovada.\nResponda em português.\n\n'+
+      '=== EMPRESA ===\nNome: '+D.nome+' | Tom: '+D.tom+'\n\n'+
+      '=== COPY DO COPYWRITER ===\n'+(R.c1||'').substring(0,700)+'\n\n'+
+      '**ANÁLISE CRÍTICA**\nAvalie título, subtítulo e legenda. O que está forte? O que está fraco?\n\n'+
+      '**TÍTULO REFINADO**\n[Versão final melhorada do título — MAIÚSCULO]\n\n'+
+      '**SUBTÍTULO REFINADO**\n[Versão final melhorada do subtítulo]\n\n'+
+      '**LEGENDA REFINADA**\n[Versão final completa da legenda com hook, corpo, CTA e hashtags]\n\n'+
+      '**APROVAÇÃO**\n[Veredicto final e instruções para o Diretor Visual]';
+    }
+  },
+
+  /* ── DEPT 3: VISUAL ── */
+  {
+    id:'v1', dept:2, wrap:'ag4wrap',
+    role:'creator', ico:'🎬',
+    name:'DIR. FOTOGRAFIA + ARTE',
+    desc:'Cria o prompt da imagem e o sistema visual do card',
+    prompt:function(){
+      return 'Você é simultaneamente o maior Diretor de Fotografia E Diretor de Arte do mundo.\n'+
+      'Vai criar: (1) o prompt perfeito para gerar a imagem de fundo via IA, e (2) o sistema de design do card.\n'+
+      'A imagem precisa: impacto visual imediato + área inferior mais escura/limpa para o texto.\nResponda em português. PROMPT em inglês.\n\n'+
+      '=== COPY APROVADA ===\n'+
+      'Título: '+(R.titulo_final||D.nome)+'\nSubtítulo: '+(R.sub_final||'')+'\n'+
+      'Premissa: '+(R.e2||'').substring(0,300)+'\n\n'+
+      'Empresa: '+D.nome+' | Nicho: '+D.nicho+' | Tom: '+D.tom+' | Formato: '+FMT.w+'×'+FMT.h+'px\n\n'+
+      '**CONCEITO VISUAL**\nO que a imagem vai mostrar e por que reforça a mensagem?\n\n'+
+      '**ILUMINAÇÃO E MOOD**\nComo a luz cria a atmosfera certa?\n\n'+
+      '**SISTEMA DE CORES DO CARD**\nDefina HEX para cada elemento:\n'+
+      '- Cor de destaque: #HEX\n- Título: #HEX\n- Subtítulo: rgba\n'+
+      '- Overlay início/fim: rgba, rgba\n- Badge/CTA: #HEX\n\n'+
+      '**TIPOGRAFIA**\nFonte do título (Google Fonts): [nome]\nFonte do subtítulo: [nome]\n\n'+
+      'CARD_STYLE_START\n'+
+      '{"hlColor":"#FFFFFF","hlFont":"Bebas Neue","hlSize":'+(FMT.h>1500?120:FMT.h>1100?90:74)+',"stColor":"rgba(255,255,255,0.82)","stFont":"DM Sans","badgeBg":"#e8390e","badgeFg":"#FFFFFF","acc":"#c9a84c","ov1":"rgba(0,0,0,0.0)","ov2":"rgba(0,0,0,0.88)","decor":"rgba(255,255,255,0.03)"}\n'+
+      'CARD_STYLE_END\n\n'+
+      '**PROMPT DE IMAGEM** (em inglês)\n[Prompt detalhado: sujeito, ambiente, luz, mood, estilo, qualidade. '+
+      'Área inferior com poucos elementos para caber o texto sobreposto. '+
+      'Termine com: photorealistic, 8k, cinematic, no text, no watermark, professional photography]';
     }
   },
   {
-    ico:'🎨', name:'DIR. DE ARTE', role:'Paleta HEX, fontes, composição e JSON do card',
-    prompt: function() {
-      return 'Você é Diretor de Arte Sênior para Instagram de marcas globais.\n'
-        + 'Retorne um CARD_JSON com cores HEX exatas para renderização CSS.\n'
-        + 'Responda em português.\n\n'
-        + 'Nicho: ' + _brief.niche + ' | Tom: ' + _brief.tone + '\n'
-        + 'Formato: ' + _fmt.w + '×' + _fmt.h + 'px\n'
-        + 'Copy: ' + (_outs[1] || 'N/A').substring(0, 300) + '\n\n'
-        + '**CONCEITO VISUAL**\n'
-        + 'Escola de design e o que o layout comunica.\n\n'
-        + '**PALETA DE CORES** (HEX obrigatório para cada cor)\n'
-        + 'Justifique cada escolha.\n\n'
-        + '**TIPOGRAFIA**\n'
-        + 'Fontes Google Fonts específicas com peso.\n\n'
-        + 'RETORNE ESTE JSON NO FINAL (preencha com HEX reais — sem placeholders):\n'
-        + 'CARD_JSON_START\n'
-        + '{"bg1":"#0a0a0a","bg2":"#1a1a2e","overlay":"rgba(0,0,0,0.65)",'
-        + '"hlColor":"#FFFFFF","hlFont":"Bebas Neue","hlSize":' + (_fmt.h > 1500 ? 110 : _fmt.h > 1100 ? 88 : 72) + ','
-        + '"eyColor":"#FFCC00","eyFont":"Space Mono",'
-        + '"stColor":"rgba(255,255,255,0.80)","stFont":"Inter",'
-        + '"badgeBg":"#FF3C00","badgeFg":"#FFFFFF","ctaColor":"#FFFFFF",'
-        + '"acc1":"#FF3C00","acc2":"#FFCC00","decor":"rgba(255,255,255,0.04)"}\n'
-        + 'CARD_JSON_END';
-    }
-  },
-  {
-    ico:'💬', name:'COPY LEGENDA', role:'Legenda poderosa + hashtags estratégicas',
-    prompt: function() {
-      return 'Você é especialista em Copy de legenda para Instagram que gera engajamento real.\n'
-        + 'A legenda aprofunda o card — não repete o que está nele.\n'
-        + 'Responda em português brasileiro.\n\n'
-        + 'Marca: ' + _brief.brand + ' | Objetivo: ' + _brief.obj + ' | Tom: ' + _brief.tone + '\n'
-        + 'O que está no card (não repita): ' + (_outs[1] || 'N/A').substring(0, 200) + '\n\n'
-        + '**HOOK** (primeira linha antes do "ver mais" — máx 125 chars — CRÍTICO)\n'
-        + '[Provocador, curioso ou promessa forte]\n\n'
-        + '**CORPO**\n'
-        + '[4-5 parágrafos curtos com emojis. Storytelling, benefícios ou autoridade.]\n\n'
-        + '**CTA PRINCIPAL**\n'
-        + '[Ação específica]\n\n'
-        + '**CTA SECUNDÁRIO**\n'
-        + '[Salvar, marcar alguém, compartilhar]\n\n'
-        + '**HASHTAGS**\n'
-        + '[25 hashtags: 5 mega + 8 grandes + 8 médias + 4 nicho]\n\n'
-        + '**MELHOR HORÁRIO**\n'
-        + '[Dia + hora + justificativa]';
-    }
-  },
-  {
-    ico:'📊', name:'TRÁFEGO PAGO', role:'Meta Ads: copy, segmentação e estratégia',
-    prompt: function() {
-      return 'Você é Especialista em Meta Ads com 10 anos de experiência gerindo campanhas.\n'
-        + 'Responda em português brasileiro.\n\n'
-        + 'Objetivo: ' + _brief.obj + ' | Nicho: ' + _brief.niche + ' | Formato: ' + _fmt.label + '\n'
-        + 'Copy do card: ' + (_outs[1] || 'N/A').substring(0, 200) + '\n\n'
-        + '**COPY PARA ANÚNCIO**\n'
-        + 'Texto principal (máx 125 chars): |\n'
-        + 'Headline (máx 40 chars): |\n'
-        + 'Descrição (máx 30 chars):\n\n'
-        + '**OBJETIVO META ADS**\n'
-        + '[Qual usar e por quê]\n\n'
-        + '**SEGMENTAÇÃO PRIMÁRIA**\n'
-        + 'Interesses + comportamentos + demografia\n\n'
-        + '**ESTRUTURA DE CAMPANHA**\n'
-        + 'Orçamento diário sugerido + duração do teste\n\n'
-        + '**TESTE A/B**\n'
-        + 'Variação A: | Variação B: | Critério de vencedor:\n\n'
-        + '**MÉTRICAS ESPERADAS**\n'
-        + 'CTR: | CPM: | CPC: | ROAS mínimo:';
-    }
-  },
-  {
-    ico:'🏆', name:'DIR. CRIATIVO', role:'Revisão final e checklist de publicação',
-    prompt: function() {
-      return 'Você é o Diretor Criativo Executivo da agência — o olhar mais exigente.\n'
-        + 'Sua revisão é cirúrgica, honesta e construtiva. Nunca valida por validar.\n'
-        + 'Responda em português brasileiro.\n\n'
-        + 'Marca: ' + _brief.brand + ' | Objetivo: ' + _brief.obj + '\n'
-        + 'Copy do card: ' + (_outs[1] || 'N/A').substring(0, 150) + '\n'
-        + 'Legenda: ' + (_outs[4] || 'N/A').substring(0, 150) + '\n\n'
-        + '**AVALIAÇÃO** (nota 0-10 com diagnóstico)\n'
-        + 'Estratégia: /10 | Copy: /10 | Arte: /10 | Foto: /10 | Legenda: /10 | Tráfego: /10\n\n'
-        + '**COERÊNCIA**\n'
-        + 'Card e legenda se complementam? Tom consistente?\n\n'
-        + '**PONTOS FORTES**\n\n'
-        + '**AJUSTES CRÍTICOS** (máx 3)\n\n'
-        + '**CHECKLIST DE PUBLICAÇÃO**\n'
-        + '- [ ] Revisão ortográfica\n'
-        + '- [ ] Links testados\n'
-        + '- [ ] Resolução correta\n'
-        + '- [ ] CTA claro\n'
-        + '- [ ] Hashtags verificadas\n'
-        + '- [ ] Horário definido\n'
-        + '- [ ] Pixel e UTMs configurados\n\n'
-        + '**SCORE FINAL**\n'
-        + 'Nota: /10 | Performance acima da média: %\n'
-        + 'Veredicto: APROVADO / COM AJUSTES / REFAZER';
+    id:'v2', dept:2, wrap:'ag5wrap',
+    role:'reviewer', ico:'🏆',
+    name:'DIRETOR CRIATIVO EXECUTIVO',
+    desc:'Revisão final — refina o prompt e aprova o layout',
+    prompt:function(){
+      return 'Você é o Diretor Criativo Executivo — o olhar mais exigente da agência.\n'+
+      'Já dirigiu campanhas premiadas em Cannes. Aprova ou reprova tudo antes de ir para produção.\n'+
+      'Sua missão: analisar a direção visual criada, refinar o prompt de imagem e entregar a versão definitiva.\nResponda em português. PROMPT FINAL em inglês.\n\n'+
+      '=== CONTEXTO ===\nEmpresa: '+D.nome+' | Tom: '+D.tom+' | '+FMT.w+'×'+FMT.h+'px\n'+
+      'Título: '+(R.titulo_final||'')+' | Subtítulo: '+(R.sub_final||'')+'\n\n'+
+      '=== DIREÇÃO DO DIR. FOTOGRAFIA + ARTE ===\n'+(R.v1||'').substring(0,700)+'\n\n'+
+      '**ANÁLISE CRÍTICA**\nO que está certo? O que precisa melhorar no conceito e no prompt?\n\n'+
+      '**CARD_STYLE REFINADO**\n[Se quiser ajustar as cores/fontes, reescreva o JSON abaixo]\n'+
+      'CARD_STYLE_START\n'+
+      '{"hlColor":"#FFFFFF","hlFont":"Bebas Neue","hlSize":'+(FMT.h>1500?120:FMT.h>1100?90:74)+',"stColor":"rgba(255,255,255,0.82)","stFont":"DM Sans","badgeBg":"#e8390e","badgeFg":"#FFFFFF","acc":"#c9a84c","ov1":"rgba(0,0,0,0.0)","ov2":"rgba(0,0,0,0.88)","decor":"rgba(255,255,255,0.03)"}\n'+
+      'CARD_STYLE_END\n\n'+
+      '**PROMPT FINAL APROVADO** (em inglês)\n[Versão definitiva do prompt — melhorada, mais específica, mais poderosa. '+
+      'Este será o prompt usado para gerar a imagem real. Seja detalhado: composição, luz, cor, estilo, atmosfera. '+
+      'Termine com: photorealistic, 8k, cinematic, no text, no watermark]\n\n'+
+      '**APROVAÇÃO FINAL**\nVeredicto + instruções finais para produção do card.';
     }
   }
-];
 
-// ── BUILD AGENT LIST ───────────────────────────────
-(function buildAgentList() {
-  var html = '';
-  _agents.forEach(function(ag, i) {
-    html += '<div class="agent-card" id="agCard' + i + '">'
-      + '<div class="agent-hd" onclick="SQUAD.toggleAgent(' + i + ')">'
-        + '<div class="agent-ico">' + ag.ico + '</div>'
-        + '<div class="agent-meta">'
-          + '<div class="agent-num">AGENTE 0' + (i + 1) + '</div>'
-          + '<div class="agent-name">' + ag.name + '</div>'
-          + '<div class="agent-role">' + ag.role + '</div>'
-        + '</div>'
-        + '<div class="agent-tag" id="agTag' + i + '">IDLE</div>'
-      + '</div>'
-      + '<div class="agent-body" id="agBody' + i + '">'
-        + '<div class="agent-text" id="agText' + i + '"></div>'
-      + '</div>'
-    + '</div>';
+]; // end AGENTS
+
+/* ══════════════════════════
+   BUILD AGENT HTML
+══════════════════════════ */
+function buildAg(ag){
+  var roleLabel=ag.role==='creator'?'CRIAÇÃO':'REVISÃO & APROVAÇÃO';
+  return '<div class="ag '+ag.role+'" id="el_'+ag.id+'">'+
+    '<div class="ag-stripe"></div>'+
+    '<div class="ag-top" onclick="togAg(\''+ag.id+'\')">'+
+      '<div class="ag-ico">'+ag.ico+'</div>'+
+      '<div class="ag-meta">'+
+        '<div class="ag-role-tag">'+roleLabel+'</div>'+
+        '<div class="ag-name">'+ag.name+'</div>'+
+        '<div class="ag-desc">'+ag.desc+'</div>'+
+      '</div>'+
+      '<div class="ag-tag" id="tag_'+ag.id+'">IDLE</div>'+
+    '</div>'+
+    '<div class="ag-body" id="bd_'+ag.id+'">'+
+      '<div class="ag-txt" id="tx_'+ag.id+'"></div>'+
+    '</div>'+
+  '</div>';
+}
+
+(function(){
+  AGENTS.forEach(function(ag){
+    document.getElementById(ag.wrap).innerHTML=buildAg(ag);
   });
-  document.getElementById('agentList').innerHTML = html;
 })();
 
-SQUAD.toggleAgent = function(i) {
-  document.getElementById('agBody' + i).classList.toggle('open');
-};
+window.togAg=function(id){document.getElementById('bd_'+id).classList.toggle('open');};
 
-// ── GEMINI API CALL — com fallback automático de modelo ────────────────
-// Ordem de tentativa: modelos gratuitos disponíveis para novos usuários em 2025/2026
-var _MODELS = [
-  'gemini-2.0-flash-lite',
-  'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
-  'gemini-1.5-pro'
-];
-var _activeModel = null; // guarda o modelo que funcionou para reusar
+/* ══════════════════════════
+   PIPELINE
+══════════════════════════ */
+var TOTAL=AGENTS.length;
+var cur=0;
 
-function _callGemini(prompt, callback) {
-  if (!_key) {
-    callback('API Key não configurada. Salve sua key acima.', null);
-    return;
-  }
-  // Se já descobrimos qual modelo funciona, usa direto
-  if (_activeModel) {
-    _tryModel(_activeModel, prompt, callback);
-  } else {
-    _tryModelChain(0, prompt, callback);
-  }
-}
+window.iniciar=function(){
+  if(BUSY)return;
+  escErr();
+  if(!KEY){showErr('Configure e salve sua Gemini API Key primeiro.');return;}
+  var empresa=document.getElementById('fEmpresa').value.trim();
+  var abordagem=document.getElementById('fAbordagem').value.trim();
+  if(!empresa||!abordagem){toast('⚠ Preencha os campos da empresa!');return;}
 
-function _tryModelChain(idx, prompt, callback) {
-  if (idx >= _MODELS.length) {
-    callback('Nenhum modelo Gemini disponível para esta key. Verifique se a key está ativa no Google AI Studio.', null);
-    return;
-  }
-  var model = _MODELS[idx];
-  _tryModel(model, prompt, function(err, result) {
-    if (err && (err.indexOf('404') !== -1 || err.indexOf('not found') !== -1 || err.indexOf('no longer available') !== -1 || err.indexOf('NOT_FOUND') !== -1)) {
-      // Este modelo não está disponível, tenta o próximo
-      _tryModelChain(idx + 1, prompt, callback);
-    } else if (!err) {
-      // Funcionou! Salva para as próximas chamadas
-      if (_activeModel !== model) {
-        _activeModel = model;
-        var badge = document.getElementById('modelBadge');
-        if (badge) badge.textContent = model.replace('gemini-','').toUpperCase();
-        SQUAD.toast('✓ Modelo: ' + model);
-      }
-      callback(null, result);
-    } else {
-      callback(err, null);
-    }
-  });
-}
-
-function _tryModel(model, prompt, callback) {
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + _key;
-
-  var body = JSON.stringify({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: { maxOutputTokens: 1400, temperature: 0.85 }
-  });
-
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', url, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.timeout = 90000;
-
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-
-    if (xhr.status === 0) {
-      callback('Sem resposta da API. Verifique sua conexão à internet.', null);
-      return;
-    }
-
-    var data;
-    try { data = JSON.parse(xhr.responseText); }
-    catch(e) { callback('Resposta inválida da API (HTTP ' + xhr.status + ').', null); return; }
-
-    if (xhr.status === 404) {
-      var m404 = (data.error && data.error.message) || 'NOT_FOUND';
-      callback('404: ' + m404, null);
-      return;
-    }
-    if (xhr.status === 400) {
-      var m400 = (data.error && data.error.message) || 'Requisição inválida';
-      callback('Erro 400: ' + m400, null);
-      return;
-    }
-    if (xhr.status === 403) {
-      callback('Erro 403: Key sem permissão. Verifique no Google AI Studio.', null);
-      return;
-    }
-    if (xhr.status === 429) {
-      callback('Limite atingido (429). Aguarde 1 minuto e tente novamente.', null);
-      return;
-    }
-    if (xhr.status !== 200) {
-      var mErr = (data.error && data.error.message) || ('HTTP ' + xhr.status);
-      callback('Erro: ' + mErr, null);
-      return;
-    }
-    if (data.error) {
-      callback('Gemini: ' + (data.error.message || JSON.stringify(data.error)), null);
-      return;
-    }
-
-    var text = '';
-    try { text = data.candidates[0].content.parts[0].text; }
-    catch(e) {
-      var reason = (data.candidates && data.candidates[0] && data.candidates[0].finishReason) || 'desconhecido';
-      callback('Resposta vazia. Motivo: ' + reason, null);
-      return;
-    }
-
-    callback(null, text);
+  D={
+    nome:document.getElementById('fNome').value.trim()||'Empresa',
+    nicho:document.getElementById('fNicho').value.trim()||'geral',
+    empresa:empresa,
+    abordagem:abordagem,
+    tom:document.getElementById('fTom').value||'Moderno e Direto'
   };
 
-  xhr.onerror   = function() { callback('Erro de rede. Verifique sua conexão.', null); };
-  xhr.ontimeout = function() { callback('Timeout (90s). Tente novamente.', null); };
-  xhr.send(body);
-}
+  BUSY=true;cur=0;R={};
+  resetUI();
+  document.getElementById('btnGo').disabled=true;
+  document.getElementById('btnGo').textContent='⏳ SQUADS EM AÇÃO...';
+  document.getElementById('progWrap').classList.add('on');
+  document.getElementById('btnArte').classList.remove('on');
 
-// ── LAUNCH PIPELINE ────────────────────────────────
-SQUAD.launch = function() {
-  if (_busy) return;
-
-  // Validate key
-  if (!_key) {
-    SQUAD.toast('⚠ Configure e salve sua Gemini API Key primeiro!');
-    document.getElementById('keyInput').focus();
-    return;
-  }
-
-  // Validate required field
-  var desc = (document.getElementById('fDesc').value || '').trim();
-  if (!desc) {
-    SQUAD.toast('⚠ Descreva o produto / serviço / tema!');
-    document.getElementById('fDesc').focus();
-    return;
-  }
-
-  _brief = {
-    brand: (document.getElementById('fBrand').value || '').trim() || 'Marca',
-    niche: document.getElementById('fNiche').value || 'geral',
-    obj:   document.getElementById('fObj').value   || 'engajamento',
-    desc:  desc,
-    tone:  document.getElementById('fTone').value  || 'moderno',
-    aud:   (document.getElementById('fAud').value  || '').trim()
-  };
-
-  _busy = true;
-  _outs = [];
-  _mj   = '';
-
-  // Reset agent UI
-  _agents.forEach(function(_, i) {
-    var c = document.getElementById('agCard' + i);
-    c.classList.remove('running', 'done', 'error');
-    document.getElementById('agTag'  + i).textContent = 'IDLE';
-    document.getElementById('agBody' + i).classList.remove('open');
-    document.getElementById('agText' + i).innerHTML = '';
-  });
-  document.getElementById('promptBox').classList.remove('show');
-  document.getElementById('legendaBox').classList.remove('show');
-  document.getElementById('extraOutputs').innerHTML = '';
-  document.getElementById('btnArte').classList.remove('show');
-
-  var btn = document.getElementById('btnGo');
-  btn.disabled = true;
-  btn.textContent = '⏳ SQUAD EM AÇÃO...';
-
-  document.getElementById('progWrap').classList.add('show');
-  _setProgress(0);
-
-  _runAgent(0);
+  rodar(0);
 };
 
-function _runAgent(i) {
-  if (i >= _agents.length) {
-    // All done
-    _setProgress(_agents.length);
-    var btn = document.getElementById('btnGo');
-    btn.disabled = false;
-    btn.textContent = '▶ ACIONAR SQUAD';
-    _busy = false;
-    document.getElementById('btnArte').classList.add('show');
-    SQUAD.toast('✓ Squad concluído! Gere a arte final abaixo.');
-    setTimeout(function() {
-      document.getElementById('btnArte').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 400);
+function rodar(i){
+  if(i>=AGENTS.length){
+    // Done!
+    setProg(AGENTS.length);
+    BUSY=false;
+    document.getElementById('btnGo').disabled=false;
+    document.getElementById('btnGo').textContent='▶ ACIONAR SQUADS';
+    document.getElementById('btnArte').classList.add('on');
+    toast('✓ Todos os squads concluídos!');
+    document.getElementById('btnArte').scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
 
-  _setProgress(i);
+  var ag=AGENTS[i];
+  setProg(i);
 
-  var card = document.getElementById('agCard' + i);
-  card.classList.remove('done', 'error');
-  card.classList.add('running');
-  document.getElementById('agTag'  + i).textContent = '...';
-  document.getElementById('agBody' + i).classList.add('open');
-  document.getElementById('agText' + i).innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // UI: running
+  var el=document.getElementById('el_'+ag.id);
+  el.classList.add('run');el.classList.remove('done','refine');
+  document.getElementById('tag_'+ag.id).textContent='...';
+  document.getElementById('bd_'+ag.id).classList.add('open');
+  document.getElementById('tx_'+ag.id).innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
 
-  var prompt = _agents[i].prompt();
+  // Mark dept as active
+  var db=document.getElementById('dept'+ag.dept+'badge');
+  db.textContent='EM AÇÃO';db.className='dept-badge';
 
-  _callGemini(prompt, function(err, result) {
-    card.classList.remove('running');
+  gemini(ag.prompt(),function(err,res){
+    var elEl=document.getElementById('el_'+ag.id);
+    elEl.classList.remove('run');
 
-    if (err) {
-      _outs.push('');
-      card.classList.add('error');
-      document.getElementById('agTag'  + i).textContent = '⚠';
-      document.getElementById('agText' + i).innerHTML = '<span class="err-txt">⚠ ' + _esc(err) + '</span>';
+    if(err){
+      elEl.classList.add('done');
+      document.getElementById('tag_'+ag.id).textContent='⚠';
+      document.getElementById('tx_'+ag.id).innerHTML='<span style="color:#ff8060">'+esc(err)+'</span>';
+      R[ag.id]='';
+      showErr('Erro em '+ag.name+': '+err);
     } else {
-      _outs.push(result);
-      card.classList.add('done');
-      document.getElementById('agTag'  + i).textContent = '✓';
-      document.getElementById('agText' + i).innerHTML = _renderText(result.substring(0, 480) + (result.length > 480 ? '…' : ''));
-      _handleOutput(i, result);
+      // Reviewer gets gold color
+      elEl.classList.add(ag.role==='reviewer'?'done refine':'done');
+      document.getElementById('tag_'+ag.id).textContent=ag.role==='reviewer'?'✓ APR':'✓';
+      document.getElementById('tx_'+ag.id).innerHTML=
+        (ag.role==='reviewer'?'<div class="approved">✓ APROVADO E REFINADO</div><br>':'')+
+        renderTxt(res.substring(0,500)+(res.length>500?'…':''));
+      R[ag.id]=res;
+      processResult(ag.id,res);
     }
 
-    // Small pause then continue
-    setTimeout(function() { _runAgent(i + 1); }, 250);
+    // Mark dept done if reviewer finished
+    if(ag.role==='reviewer'){
+      var db2=document.getElementById('dept'+ag.dept+'badge');
+      db2.textContent='APROVADO ✓';db2.className='dept-badge done';
+    }
+
+    setTimeout(function(){rodar(i+1);},250);
   });
 }
 
-function _handleOutput(i, text) {
-  // Agent 2 = Dir Fotografia → extract image prompt
-  if (i === 2) {
-    var patterns = [
-      /\*\*PROMPT DE IMAGEM\*\*\n([\s\S]+?)(?=\n\n\*\*|\n\*\*|$)/i,
-      /PROMPT DE IMAGEM[:\s]*\n([\s\S]+?)(?=\n\n\*\*|\n\*\*|$)/i
-    ];
-    _mj = '';
-    for (var p = 0; p < patterns.length; p++) {
-      var m = text.match(patterns[p]);
-      if (m && m[1].trim().length > 20) {
-        _mj = m[1].trim().replace(/^```\w*\n?/, '').replace(/```$/, '').trim();
-        break;
-      }
+function processResult(id,txt){
+  // After copy reviewer (c2) — extract final copy
+  if(id==='c2'){
+    var tit=extract(txt,'TÍTULO REFINADO')||extract(txt,'TITULO REFINADO')||extract(R.c1||'','TITULO');
+    var sub=extract(txt,'SUBTÍTULO REFINADO')||extract(txt,'SUBTITULO REFINADO')||extract(R.c1||'','SUBTITULO');
+    var leg=extractBlock(txt,'LEGENDA REFINADA','APROVAÇÃO')||extractBlock(R.c1||'','LEGENDA','RACIOCÍNIO');
+    R.titulo_final=tit||D.nome.toUpperCase();
+    R.sub_final=sub||'';
+    R.leg_final=leg||'';
+    document.getElementById('outTitulo').textContent=R.titulo_final;
+    document.getElementById('outSub').textContent=R.sub_final;
+    document.getElementById('outLeg').textContent=R.leg_final.replace(/\*\*/g,'').trim();
+    document.getElementById('outCopy').classList.add('on');
+  }
+  // After visual reviewer (v2) — extract final prompt + style
+  if(id==='v2'){
+    // Try prompt from reviewer first, fallback to creator
+    var pm=txt.match(/\*\*PROMPT FINAL APROVADO\*\*[^\n]*\n([\s\S]+?)(?:\n\n\*\*|$)/i);
+    if(!pm) pm=txt.match(/\*\*PROMPT[^*]*\*\*[^\n]*\n([\s\S]+?)(?:\n\n\*\*|$)/i);
+    R.imgPrompt=pm?pm[1].trim().replace(/^```\w*\n?/,'').replace(/```$/,'').trim():'';
+    if(!R.imgPrompt||R.imgPrompt.length<20){
+      // fallback to creator
+      var pm2=(R.v1||'').match(/\*\*PROMPT DE IMAGEM\*\*[^\n]*\n([\s\S]+?)(?:\n\n\*\*|$)/i);
+      R.imgPrompt=pm2?pm2[1].trim():'';
     }
-    if (!_mj) _mj = _brief.niche + ' professional atmosphere, cinematic lighting, 8k resolution, no text, no watermark';
-    document.getElementById('promptTxt').textContent = _mj;
-    document.getElementById('promptBox').classList.add('show');
-  }
+    if(!R.imgPrompt||R.imgPrompt.length<20){
+      R.imgPrompt=D.nicho+' professional cinematic atmosphere, dramatic lighting, 8k, no text, no watermark';
+    }
 
-  // Agent 4 = Legenda
-  if (i === 4) {
-    document.getElementById('legendaTxt').textContent = text.replace(/\*\*/g, '');
-    document.getElementById('legendaBox').classList.add('show');
+    // Extract style — try reviewer first then creator
+    R.cardStyle={};
+    var sources=[txt, R.v1||''];
+    for(var si=0;si<sources.length;si++){
+      var sm=sources[si].match(/CARD_STYLE_START\s*([\s\S]*?)\s*CARD_STYLE_END/);
+      if(sm){try{R.cardStyle=JSON.parse(sm[1].trim());break;}catch(e){}}
+    }
 
-    // Build collapsibles for previous agents
-    var html = '';
-    [{title:'🎨 DIR. DE ARTE', idx:3}, {title:'📸 DIR. FOTOGRAFIA', idx:2},
-     {title:'✍️ COPY DO CARD', idx:1}, {title:'🧠 ESTRATÉGIA COMPLETA', idx:0}]
-    .forEach(function(d) {
-      var id = 'coll' + d.idx;
-      html += '<div class="collapsible">'
-        + '<div class="coll-hd" onclick="SQUAD.toggleColl(\'' + id + '\')">'
-          + '<div class="coll-title">' + d.title + '</div>'
-          + '<span style="color:#555">▾</span>'
-        + '</div>'
-        + '<div class="coll-body" id="' + id + '">' + _renderText(_outs[d.idx] || '') + '</div>'
-      + '</div>';
-    });
-    document.getElementById('extraOutputs').innerHTML = html;
-  }
-
-  if (i === 5) {
-    document.getElementById('extraOutputs').innerHTML +=
-      '<div class="collapsible">'
-      + '<div class="coll-hd" onclick="SQUAD.toggleColl(\'collTraf\')">'
-        + '<div class="coll-title">📊 TRÁFEGO PAGO</div>'
-        + '<span style="color:#555">▾</span>'
-      + '</div>'
-      + '<div class="coll-body" id="collTraf">' + _renderText(text) + '</div>'
-      + '</div>';
-  }
-
-  if (i === 6) {
-    document.getElementById('extraOutputs').innerHTML +=
-      '<div class="collapsible" style="border-color:rgba(255,204,0,.25)">'
-      + '<div class="coll-hd" onclick="SQUAD.toggleColl(\'collDC\')">'
-        + '<div class="coll-title">🏆 DIR. CRIATIVO — REVISÃO FINAL</div>'
-        + '<span style="color:#555">▾</span>'
-      + '</div>'
-      + '<div class="coll-body open" id="collDC">' + _renderText(text) + '</div>'
-      + '</div>';
+    document.getElementById('outPromptTxt').textContent=R.imgPrompt;
+    document.getElementById('outPrompt').classList.add('on');
   }
 }
 
-function _setProgress(cur) {
-  var pct = Math.round(cur / _agents.length * 100);
-  document.getElementById('progFill').style.width = pct + '%';
-  document.getElementById('progPct').textContent = pct + '%';
-  document.getElementById('progLabel').textContent = cur < _agents.length
-    ? 'Agente ' + (cur + 1) + ': ' + _agents[cur].name
-    : '✓ Pipeline concluído!';
+function extract(txt,label){
+  var rx=new RegExp('\\*\\*'+label+'\\*\\*\\n([^\\n\\*\\[]+)','i');
+  var m=txt.match(rx);
+  return m?m[1].trim().replace(/^\[|\]$/g,'').replace(/^["'](.*)["']$/,'$1'):'';
+}
+function extractBlock(txt,start,end){
+  var rx=new RegExp('\\*\\*'+start+'\\*\\*[^\\n]*\\n([\\s\\S]+?)(?:\\n\\*\\*'+end+'|$)','i');
+  var m=txt.match(rx);return m?m[1].trim():'';
 }
 
-// ── ARTE FINAL ─────────────────────────────────────
-SQUAD.openModal = function() {
-  var modal = document.getElementById('modal');
-  modal.classList.add('open');
+function setProg(cur){
+  var p=Math.round(cur/TOTAL*100);
+  document.getElementById('progFill').style.width=p+'%';
+  document.getElementById('progPct').textContent=p+'%';
+  document.getElementById('progLbl').textContent=
+    cur<TOTAL?AGENTS[cur].name+' em ação...':'✓ Pipeline concluído!';
+}
 
-  // Reset modal state
-  document.getElementById('previewSpinner').classList.remove('hidden');
-  document.getElementById('spinTxt').textContent = 'GERANDO IMAGEM...';
-  document.getElementById('modalStatus').className = 'modal-status';
-  document.getElementById('modalStatus').textContent = 'Gerando com Pollinations AI...';
-  document.getElementById('btnDownload').disabled = true;
-  document.getElementById('stepsList').innerHTML = '';
-  document.getElementById('previewInner').innerHTML = '';
-  document.getElementById('btnArte').disabled = true;
+function resetUI(){
+  AGENTS.forEach(function(ag){
+    var el=document.getElementById('el_'+ag.id);
+    el.classList.remove('run','done','refine');
+    document.getElementById('tag_'+ag.id).textContent='IDLE';
+    document.getElementById('bd_'+ag.id).classList.remove('open');
+    document.getElementById('tx_'+ag.id).innerHTML='';
+  });
+  [0,1,2].forEach(function(i){
+    var db=document.getElementById('dept'+i+'badge');
+    db.textContent='AGUARDANDO';db.className='dept-badge';
+  });
+  document.getElementById('outCopy').classList.remove('on');
+  document.getElementById('outPrompt').classList.remove('on');
+  document.getElementById('RT').innerHTML='';
+}
 
-  // Set aspect ratio
-  document.getElementById('previewRatio').style.paddingTop = (_fmt.h / _fmt.w * 100) + '%';
+/* ══════════════════════════
+   ARTE FINAL — NANO BANANA
+══════════════════════════ */
+var artSt=[];
 
-  // Set render target size
-  var rt = document.getElementById('RENDER_TARGET');
-  rt.style.cssText = 'position:fixed;left:-19999px;top:0;width:' + _fmt.w + 'px;height:' + _fmt.h + 'px;overflow:hidden;z-index:-1;pointer-events:none;';
-
-  _artSteps = [];
-  _generateArt();
+window.abrirModal=function(){
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('prevSpin').classList.remove('gone');
+  document.getElementById('spinTxt').textContent='GERANDO IMAGEM...';
+  document.getElementById('mStatus').className='modal-status';
+  document.getElementById('mStatus').textContent='Gerando imagem com Pollinations AI (Flux)...';
+  document.getElementById('btnDl').disabled=true;
+  document.getElementById('stLog').innerHTML='';
+  document.getElementById('prevInner').innerHTML='';
+  document.getElementById('btnArte').disabled=true;
+  document.getElementById('prevRatio').style.paddingTop=(FMT.h/FMT.w*100)+'%';
+  document.getElementById('RT').style.cssText=
+    'position:fixed;left:-39999px;top:0;width:'+FMT.w+'px;height:'+FMT.h+'px;overflow:hidden;z-index:-100;pointer-events:none;';
+  artSt=[];
+  gerarArte();
 };
 
-function _addStep(txt) {
-  if (_artSteps.length > 0) _artSteps[_artSteps.length - 1].s = 'ok';
-  _artSteps.push({ t: txt, s: 'active' });
-  _renderSteps();
-  document.getElementById('spinTxt').textContent = txt.substring(0, 24).toUpperCase();
+function addSt(txt,s){
+  if(artSt.length>0&&!artSt[artSt.length-1].s) artSt[artSt.length-1].s='ok';
+  if(s==='active'||!s) artSt.push({t:txt,s:'active'});
+  renderSt();
+  document.getElementById('spinTxt').textContent=txt.substring(0,26).toUpperCase();
 }
-
-function _renderSteps() {
-  document.getElementById('stepsList').innerHTML = _artSteps.map(function(s) {
-    var ic = s.s === 'ok' ? '✓' : s.s === 'err' ? '✕' : '●';
-    return '<div class="step-item ' + s.s + '">' + ic + ' ' + _esc(s.t) + '</div>';
+function finSt(s){if(artSt.length>0)artSt[artSt.length-1].s=s||'ok';renderSt();}
+function renderSt(){
+  document.getElementById('stLog').innerHTML=artSt.map(function(s){
+    var ic=s.s==='ok'?'✓':s.s==='err'?'✕':'●';
+    return '<div class="step-item '+s.s+'"><span>'+ic+'</span>'+esc(s.t)+'</div>';
   }).join('');
 }
 
-function _generateArt() {
-  _addStep('Gerando imagem com Pollinations AI...');
-  var seed = Math.floor(Math.random() * 99999);
-  var enc = encodeURIComponent(_mj.substring(0, 350));
-  var url = 'https://image.pollinations.ai/prompt/' + enc
-    + '?width=' + _fmt.w + '&height=' + _fmt.h
-    + '&seed=' + seed + '&model=flux&nologo=true&enhance=true';
-
-  var img = new Image();
-  img.crossOrigin = 'anonymous';
-
-  var timer = setTimeout(function() {
-    _addStep('Timeout na imagem — usando gradiente...');
-    _buildCard(null);
-  }, 20000);
-
-  img.onload = function() {
-    clearTimeout(timer);
-    _addStep('Imagem gerada! Montando layout...');
-    _buildCard(img);
-  };
-  img.onerror = function() {
-    clearTimeout(timer);
-    _addStep('Erro na imagem — usando gradiente...');
-    _buildCard(null);
-  };
-  img.src = url;
+function gerarArte(){
+  addSt('Gerando imagem com Pollinations AI (Flux)...');
+  var seed=Math.floor(Math.random()*99999);
+  var p=(R.imgPrompt||D.nicho+' cinematic professional, 8k, no text').substring(0,380);
+  var url='https://image.pollinations.ai/prompt/'+encodeURIComponent(p)+
+    '?width='+FMT.w+'&height='+FMT.h+'&seed='+seed+'&model=flux&nologo=true&enhance=true';
+  var img=new Image();img.crossOrigin='anonymous';
+  var t=setTimeout(function(){finSt('ok');addSt('Timeout — usando gradiente...');montarCard(null);},22000);
+  img.onload=function(){clearTimeout(t);finSt('ok');addSt('Imagem gerada! Montando layout...');montarCard(img);};
+  img.onerror=function(){clearTimeout(t);finSt('ok');addSt('Erro — usando gradiente...');montarCard(null);};
+  img.src=url;
 }
 
-function _buildCard(imgEl) {
-  // Parse color/style JSON from Dir. Arte
-  var cs = {};
-  var sm = (_outs[3] || '').match(/CARD_JSON_START\s*([\s\S]*?)\s*CARD_JSON_END/);
-  if (sm) { try { cs = JSON.parse(sm[1].trim()); } catch(e) {} }
-
-  var C = {
-    bg1:     cs.bg1     || '#0a0a0a',
-    bg2:     cs.bg2     || '#1a1a2e',
-    overlay: cs.overlay || 'rgba(0,0,0,0.65)',
-    hlColor: cs.hlColor || '#FFFFFF',
-    hlFont:  cs.hlFont  || 'Bebas Neue',
-    hlSize:  parseInt(cs.hlSize) || (_fmt.h > 1500 ? 110 : _fmt.h > 1100 ? 88 : 72),
-    eyColor: cs.eyColor || '#FFCC00',
-    stColor: cs.stColor || 'rgba(255,255,255,0.80)',
-    badgeBg: cs.badgeBg || '#FF3C00',
-    badgeFg: cs.badgeFg || '#FFFFFF',
-    ctaColor:cs.ctaColor|| '#FFFFFF',
-    acc1:    cs.acc1    || '#FF3C00',
-    acc2:    cs.acc2    || '#FFCC00',
-    decor:   cs.decor   || 'rgba(255,255,255,0.04)'
+function montarCard(imgEl){
+  var cs=R.cardStyle||{};
+  var C={
+    hlColor:cs.hlColor||'#FFFFFF',hlFont:cs.hlFont||'Bebas Neue',
+    hlSize:parseInt(cs.hlSize)||(FMT.h>1500?120:FMT.h>1100?90:74),
+    stColor:cs.stColor||'rgba(255,255,255,0.82)',stFont:cs.stFont||'DM Sans',
+    badgeBg:cs.badgeBg||'#e8390e',badgeFg:cs.badgeFg||'#FFFFFF',
+    acc:cs.acc||'#c9a84c',
+    ov1:cs.ov1||'rgba(0,0,0,0.0)',ov2:cs.ov2||'rgba(0,0,0,0.88)',
+    decor:cs.decor||'rgba(255,255,255,0.03)'
   };
 
-  // Extract copy fields
-  function gF(label) {
-    var rx = new RegExp('\\*\\*' + label + '\\*\\*\\n([^\\n\\*]+)', 'i');
-    var m = (_outs[1] || '').match(rx);
-    return m ? m[1].trim().replace(/^\[|\]$/g, '') : '';
-  }
-  var badge    = gF('BADGE');
-  var eyebrow  = gF('EYEBROW');
-  var headline = gF('HEADLINE') || _brief.brand.toUpperCase();
-  var subtext  = gF('SUBTEXT');
-  var cta      = gF('CTA');
-  var brandTag = '@' + _brief.brand.toLowerCase().replace(/\s+/g, '');
+  var W=FMT.w,H=FMT.h,pad=Math.round(W*0.07),hl=C.hlSize;
+  var titulo=(R.titulo_final||D.nome).toUpperCase();
+  var sub=R.sub_final||'';
+  var brand='@'+D.nome.toLowerCase().replace(/\s+/g,'');
+  var nicho=D.nicho.split(' ').slice(0,2).join(' ').toUpperCase();
 
-  var W = _fmt.w, H = _fmt.h, pad = Math.round(W * 0.065), hl = C.hlSize;
+  function mk(tag,css,txt){var d=document.createElement(tag);d.style.cssText=css;if(txt!==undefined)d.textContent=txt;return d;}
 
-  function el(tag, css, txt) {
-    var d = document.createElement(tag);
-    d.style.cssText = css;
-    if (txt !== undefined) d.textContent = txt;
-    return d;
-  }
+  var card=mk('div','position:relative;width:'+W+'px;height:'+H+'px;overflow:hidden;font-family:sans-serif;background:#080808;');
 
-  // ── Background ──
-  var bgCss;
-  if (imgEl) {
-    var cv = document.createElement('canvas');
-    cv.width = W; cv.height = H;
-    var ctx = cv.getContext('2d');
-    var iR = imgEl.naturalWidth / imgEl.naturalHeight, cR = W / H;
-    var dw, dh, dx, dy;
-    if (iR > cR) { dh = H; dw = H * iR; dx = (W - dw) / 2; dy = 0; }
-    else          { dw = W; dh = W / iR; dx = 0; dy = (H - dh) / 2; }
-    ctx.drawImage(imgEl, dx, dy, dw, dh);
-    bgCss = 'background-image:url(' + cv.toDataURL('image/jpeg', .9) + ');background-size:cover;background-position:center;';
+  // BG
+  if(imgEl){
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+    var ctx=cv.getContext('2d');
+    var iR=imgEl.naturalWidth/imgEl.naturalHeight,cR=W/H,dw,dh,dx,dy;
+    if(iR>cR){dh=H;dw=H*iR;dx=(W-dw)/2;dy=0;}else{dw=W;dh=W/iR;dx=0;dy=(H-dh)/2;}
+    ctx.drawImage(imgEl,dx,dy,dw,dh);
+    card.appendChild(mk('div','position:absolute;inset:0;background-image:url('+cv.toDataURL('image/jpeg',.92)+');background-size:cover;background-position:center;'));
   } else {
-    bgCss = 'background:linear-gradient(160deg,' + C.bg1 + ' 0%,' + C.bg2 + ' 100%);';
+    card.appendChild(mk('div','position:absolute;inset:0;background:linear-gradient(145deg,#090914 0%,#120820 40%,#080d14 100%);'));
+    // glow
+    card.appendChild(mk('div','position:absolute;width:'+Math.round(W*.75)+'px;height:'+Math.round(W*.75)+'px;border-radius:50%;left:'+Math.round(W*.1)+'px;top:'+Math.round(H*-.15)+'px;background:radial-gradient(circle,'+C.acc+'33 0%,transparent 70%);filter:blur('+Math.round(W*.09)+'px);'));
   }
 
-  var card = el('div', 'position:relative;width:' + W + 'px;height:' + H + 'px;overflow:hidden;' + bgCss);
+  // Overlay bottom-heavy
+  card.appendChild(mk('div','position:absolute;inset:0;background:linear-gradient(to top,'+C.ov2+' 0%,rgba(0,0,0,0.5) 42%,'+C.ov1+' 100%);'));
+  // Vinheta lateral
+  card.appendChild(mk('div','position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.4) 0%,transparent 35%,transparent 65%,rgba(0,0,0,.25) 100%);'));
 
-  // Dark gradient overlay
-  card.appendChild(el('div',
-    'position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.38) 55%,rgba(0,0,0,.08) 100%);'));
+  // Accent top line
+  card.appendChild(mk('div','position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,'+C.acc+','+C.badgeBg+',transparent);'));
 
-  // SVG decor circles
-  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-  svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
-  function circ(cx, cy, r) {
-    var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
-    c.setAttribute('r', r);   c.setAttribute('fill', C.decor);
-    return c;
-  }
-  svg.appendChild(circ(Math.round(W * .84), Math.round(H * .10), Math.round(W * .18)));
-  svg.appendChild(circ(Math.round(W * .08), Math.round(H * .38), Math.round(W * .09)));
+  // SVG decor
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
+  function circ(cx,cy,r,fill){var c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);c.setAttribute('fill',fill);return c;}
+  svg.appendChild(circ(Math.round(W*.84),Math.round(H*.10),Math.round(W*.22),C.decor));
+  svg.appendChild(circ(Math.round(W*.08),Math.round(H*.36),Math.round(W*.09),C.decor));
+  // diagonal accent line
+  var ln=document.createElementNS(NS,'line');
+  ln.setAttribute('x1','0');ln.setAttribute('y1',Math.round(H*.52));
+  ln.setAttribute('x2',Math.round(W*.45));ln.setAttribute('y2',Math.round(H*.38));
+  ln.setAttribute('stroke',C.acc);ln.setAttribute('stroke-opacity','0.15');ln.setAttribute('stroke-width','1.5');
+  svg.appendChild(ln);
   card.appendChild(svg);
 
-  // Badge
-  if (badge) {
-    var bfs = Math.round(hl * .16);
-    card.appendChild(el('div',
-      'position:absolute;top:' + pad + 'px;left:' + pad + 'px;'
-      + 'background:' + C.badgeBg + ';color:' + C.badgeFg + ';'
-      + 'font-family:Space Mono,monospace;font-size:' + bfs + 'px;letter-spacing:3px;'
-      + 'padding:' + Math.round(bfs * .5) + 'px ' + Math.round(bfs * 1.1) + 'px;'
-      + 'border-radius:4px;text-transform:uppercase;z-index:10;',
-      badge));
+  // TOP: brand
+  card.appendChild(mk('div','position:absolute;top:'+pad+'px;right:'+pad+'px;font-family:Space Mono,monospace;font-size:'+Math.round(hl*.11)+'px;color:rgba(255,255,255,.28);letter-spacing:2px;z-index:10;',brand));
+
+  // TOP: nicho badge
+  var bfs=Math.round(hl*.14);
+  card.appendChild(mk('div','position:absolute;top:'+pad+'px;left:'+pad+'px;background:'+C.badgeBg+';color:'+C.badgeFg+';font-family:Space Mono,monospace;font-size:'+bfs+'px;letter-spacing:2px;padding:'+Math.round(bfs*.5)+'px '+Math.round(bfs*1.1)+'px;border-radius:4px;text-transform:uppercase;z-index:10;',nicho));
+
+  // CONTENT BLOCK
+  var bottom=Math.round(pad*1.7);
+  var cont=mk('div','position:absolute;bottom:'+bottom+'px;left:'+pad+'px;right:'+pad+'px;z-index:10;');
+
+  // Eyebrow
+  cont.appendChild(mk('div','font-family:Space Mono,monospace;font-size:'+Math.round(hl*.155)+'px;color:'+C.acc+';letter-spacing:4px;text-transform:uppercase;margin-bottom:'+Math.round(hl*.11)+'px;',D.nome.toUpperCase()));
+
+  // Accent rule
+  cont.appendChild(mk('div','width:'+Math.round(W*.055)+'px;height:2px;background:'+C.acc+';margin-bottom:'+Math.round(hl*.19)+'px;border-radius:1px;'));
+
+  // Título
+  cont.appendChild(mk('div','font-family:\''+C.hlFont+'\',Impact,Haettenschweiler,sans-serif;font-weight:900;font-size:'+hl+'px;color:'+C.hlColor+';line-height:0.93;text-transform:uppercase;letter-spacing:-1px;margin-bottom:'+Math.round(hl*.16)+'px;text-shadow:0 4px 40px rgba(0,0,0,.65);',titulo));
+
+  // Subtítulo
+  if(sub){
+    cont.appendChild(mk('div','font-family:\''+C.stFont+'\',sans-serif;font-size:'+Math.round(hl*.215)+'px;color:'+C.stColor+';line-height:1.45;margin-bottom:'+Math.round(hl*.26)+'px;max-width:88%;',sub));
   }
 
-  // Brand tag
-  card.appendChild(el('div',
-    'position:absolute;top:' + pad + 'px;right:' + pad + 'px;'
-    + 'font-family:Space Mono,monospace;font-size:' + Math.round(hl * .13) + 'px;'
-    + 'color:rgba(255,255,255,.35);letter-spacing:2px;z-index:10;',
-    brandTag));
-
-  // Content block
-  var cont = el('div',
-    'position:absolute;bottom:' + Math.round(pad * 1.4) + 'px;'
-    + 'left:' + pad + 'px;right:' + pad + 'px;z-index:10;');
-
-  if (eyebrow) {
-    cont.appendChild(el('div',
-      'font-family:Space Mono,monospace;font-size:' + Math.round(hl * .19) + 'px;'
-      + 'color:' + C.eyColor + ';letter-spacing:4px;text-transform:uppercase;'
-      + 'margin-bottom:' + Math.round(hl * .12) + 'px;',
-      eyebrow));
-  }
-  cont.appendChild(el('div',
-    'font-family:' + C.hlFont + ',Impact,sans-serif;font-weight:700;'
-    + 'font-size:' + hl + 'px;color:' + C.hlColor + ';line-height:1.0;'
-    + 'text-transform:uppercase;letter-spacing:1px;'
-    + 'margin-bottom:' + Math.round(hl * .14) + 'px;'
-    + 'text-shadow:0 2px 30px rgba(0,0,0,.7);',
-    headline));
-
-  if (subtext) {
-    cont.appendChild(el('div',
-      'font-family:Inter,sans-serif;font-size:' + Math.round(hl * .21) + 'px;'
-      + 'color:' + C.stColor + ';line-height:1.45;'
-      + 'margin-bottom:' + Math.round(hl * .22) + 'px;',
-      subtext));
-  }
-  if (cta) {
-    var ctaFs = Math.round(hl * .17);
-    cont.appendChild(el('div',
-      'display:inline-block;font-family:Space Mono,monospace;font-size:' + ctaFs + 'px;'
-      + 'color:' + C.ctaColor + ';border:1px solid rgba(255,255,255,.4);'
-      + 'padding:' + Math.round(ctaFs * .6) + 'px ' + Math.round(ctaFs * 1.4) + 'px;'
-      + 'letter-spacing:2px;text-transform:uppercase;border-radius:3px;',
-      cta));
-  }
+  // CTA row
+  var cta=mk('div','display:flex;align-items:center;gap:'+Math.round(hl*.18)+'px;');
+  cta.appendChild(mk('div','display:inline-flex;align-items:center;font-family:Space Mono,monospace;font-size:'+Math.round(hl*.148)+'px;color:'+C.badgeFg+';background:'+C.badgeBg+';padding:'+Math.round(hl*.2)+'px '+Math.round(hl*.55)+'px;border-radius:4px;letter-spacing:2px;text-transform:uppercase;','SAIBA MAIS →'));
+  cta.appendChild(mk('div','flex:1;height:1px;background:rgba(255,255,255,.12);'));
+  cont.appendChild(cta);
   card.appendChild(cont);
 
-  // Accent line bottom
-  card.appendChild(el('div',
-    'position:absolute;bottom:0;left:0;right:0;height:4px;'
-    + 'background:linear-gradient(90deg,' + C.acc1 + ',' + C.acc2 + ');'));
+  // Bottom accent
+  card.appendChild(mk('div','position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,'+C.acc+','+C.badgeBg+' 60%,transparent);'));
 
-  // Inject into hidden render target
-  var rt = document.getElementById('RENDER_TARGET');
-  rt.innerHTML = '';
-  rt.appendChild(card);
+  // RENDER
+  var rt=document.getElementById('RT');rt.innerHTML='';rt.appendChild(card);
 
-  // Wait for fonts, then show scaled preview
-  setTimeout(function() {
-    var wrapW = document.getElementById('previewWrap').offsetWidth;
-    var scale = wrapW / W;
-
-    var inner = document.getElementById('previewInner');
-    inner.innerHTML = '';
-    var sw = document.createElement('div');
-    sw.style.cssText = 'position:absolute;top:0;left:0;'
-      + 'width:' + W + 'px;height:' + H + 'px;'
-      + 'transform:scale(' + scale + ');transform-origin:top left;';
+  setTimeout(function(){
+    var wW=document.getElementById('prevWrap').offsetWidth;
+    var sc=wW/W;
+    var inner=document.getElementById('prevInner');
+    inner.innerHTML='';
+    var sw=mk('div','position:absolute;top:0;left:0;width:'+W+'px;height:'+H+'px;transform:scale('+sc+');transform-origin:top left;');
     sw.appendChild(card.cloneNode(true));
     inner.appendChild(sw);
-
-    if (_artSteps.length > 0) _artSteps[_artSteps.length - 1].s = 'ok';
-    _renderSteps();
-
-    document.getElementById('previewSpinner').classList.add('hidden');
-    document.getElementById('modalStatus').className = 'modal-status ok';
-    document.getElementById('modalStatus').textContent = '✓ Arte gerada! Verifique e baixe abaixo.';
-    document.getElementById('btnDownload').disabled = false;
-    document.getElementById('btnArte').disabled = false;
-  }, 800);
+    finSt('ok');
+    document.getElementById('prevSpin').classList.add('gone');
+    document.getElementById('mStatus').className='modal-status ok';
+    document.getElementById('mStatus').textContent='✓ Arte final aprovada! Verifique e baixe abaixo.';
+    document.getElementById('btnDl').disabled=false;
+    document.getElementById('btnArte').disabled=false;
+  },900);
 }
 
-// ── DOWNLOAD ───────────────────────────────────────
-SQUAD.download = function() {
-  var btn = document.getElementById('btnDownload');
-  btn.disabled = true;
-  btn.textContent = '⏳ CAPTURANDO...';
-
-  var rt = document.getElementById('RENDER_TARGET');
-  var cardEl = rt.firstElementChild;
-  if (!cardEl) {
-    SQUAD.toast('⚠ Gere a arte primeiro!');
-    btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG';
-    return;
-  }
-
-  // Bring on-screen briefly for capture
-  rt.style.left = '0';
-  rt.style.zIndex = '9999';
-
-  setTimeout(function() {
-    html2canvas(cardEl, {
-      width: _fmt.w, height: _fmt.h, scale: 1,
-      useCORS: true, allowTaint: true,
-      backgroundColor: null, logging: false
-    }).then(function(canvas) {
-      rt.style.left = '-19999px'; rt.style.zIndex = '-1';
-
-      canvas.toBlob(function(blob) {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = _brief.brand.replace(/\s+/g, '-').toLowerCase() + '-' + _fmt.w + 'x' + _fmt.h + '.png';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
-        btn.textContent = '✓ BAIXADO!';
-        SQUAD.toast('✓ PNG salvo com sucesso!');
-        setTimeout(function() { btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG'; }, 3000);
-      }, 'image/png', 1.0);
-
-    }).catch(function() {
-      rt.style.left = '-19999px'; rt.style.zIndex = '-1';
-      // HTML fallback
-      var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
-        + '<style>*{margin:0;padding:0}body{width:' + _fmt.w + 'px;height:' + _fmt.h + 'px;overflow:hidden}</style>'
-        + '</head><body>' + rt.innerHTML + '</body></html>';
-      var b = new Blob([h], { type: 'text/html' });
-      var u = URL.createObjectURL(b);
-      var a = document.createElement('a');
-      a.href = u;
-      a.download = _brief.brand.replace(/\s+/g, '-').toLowerCase() + '.html';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(u);
-      btn.disabled = false; btn.textContent = '⬇ BAIXAR PNG';
-      SQUAD.toast('Salvo como HTML — abra no Chrome e use Ctrl+Shift+P → Screenshot');
+/* ══════════════════════════
+   DOWNLOAD
+══════════════════════════ */
+window.baixar=function(){
+  var btn=document.getElementById('btnDl');
+  btn.disabled=true;btn.textContent='⏳ CAPTURANDO...';
+  var rt=document.getElementById('RT');
+  var cardEl=rt.firstElementChild;
+  if(!cardEl){toast('Gere a arte primeiro!');btn.disabled=false;btn.textContent='⬇ BAIXAR PNG';return;}
+  rt.style.left='0';rt.style.zIndex='9999';
+  setTimeout(function(){
+    html2canvas(cardEl,{width:FMT.w,height:FMT.h,scale:1,useCORS:true,allowTaint:true,backgroundColor:null,logging:false})
+    .then(function(canvas){
+      rt.style.left='-39999px';rt.style.zIndex='-100';
+      canvas.toBlob(function(blob){
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a');a.href=url;
+        a.download=D.nome.replace(/\s+/g,'-').toLowerCase()+'-'+FMT.w+'x'+FMT.h+'.png';
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+        setTimeout(function(){URL.revokeObjectURL(url);},3000);
+        btn.textContent='✓ BAIXADO!';toast('✓ PNG salvo!');
+        setTimeout(function(){btn.disabled=false;btn.textContent='⬇ BAIXAR PNG';},3000);
+      },'image/png',1.0);
+    }).catch(function(){
+      rt.style.left='-39999px';rt.style.zIndex='-100';
+      var h='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0}body{width:'+FMT.w+'px;height:'+FMT.h+'px;overflow:hidden}</style></head><body>'+rt.innerHTML+'</body></html>';
+      var b=new Blob([h],{type:'text/html'});var u=URL.createObjectURL(b);
+      var a=document.createElement('a');a.href=u;a.download=D.nome.replace(/\s+/g,'-').toLowerCase()+'.html';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+      btn.disabled=false;btn.textContent='⬇ BAIXAR PNG';
+      toast('Salvo como HTML — abra no Chrome para screenshot');
     });
-  }, 500);
+  },500);
 };
 
-SQUAD.closeModal = function() {
-  document.getElementById('modal').classList.remove('open');
-  document.getElementById('btnArte').disabled = false;
+window.fecharModal=function(){document.getElementById('modal').classList.remove('open');document.getElementById('btnArte').disabled=false;};
+
+/* ══════════════════════════
+   HELPERS
+══════════════════════════ */
+window.cp=function(id,btn){
+  var t=document.getElementById(id).textContent;
+  function ok(){var o=btn.textContent;btn.textContent='✓ Copiado!';setTimeout(function(){btn.textContent=o;},2000);}
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(ok);}
+  else{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);ok();}
 };
+function renderTxt(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg){var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2800);}
+function showErr(msg){var e=document.getElementById('errBox');e.textContent='⚠️ '+msg;e.classList.add('on');e.scrollIntoView({behavior:'smooth',block:'center'});}
+function escErr(){document.getElementById('errBox').classList.remove('on');}
 
-// ── UTIL ───────────────────────────────────────────
-SQUAD.toggleColl = function(id) { document.getElementById(id).classList.toggle('open'); };
+/* ══════════════════════════
+   INIT
+══════════════════════════ */
+loadKey();
 
-SQUAD.copyEl = function(id, btn) {
-  var txt = document.getElementById(id).textContent;
-  function ok() {
-    var orig = btn.textContent;
-    btn.textContent = '✓ Copiado!';
-    setTimeout(function() { btn.textContent = orig; }, 2000);
-  }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(txt).then(ok);
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = txt; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta); ok();
-  }
-};
-
-SQUAD.toast = function(msg) {
-  var t = document.createElement('div');
-  t.className = 'toast'; t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 2800);
-};
-
-function _renderText(t) {
-  return (t || '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>');
-}
-
-function _esc(s) {
-  return String(s || '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-// ── INIT ───────────────────────────────────────────
-SQUAD.loadKey();
+})();
 </script>
 </body>
 </html>
